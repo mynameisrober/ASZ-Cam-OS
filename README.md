@@ -1,133 +1,134 @@
 # ASZ Cam OS
 
-**Professional Camera Operating System for Raspberry Pi**
+**Sistema Operativo de Cámara Profesional para Raspberry Pi**
 
-ASZ Cam OS transforms your Raspberry Pi into a dedicated, high-performance camera system with cloud synchronization, professional UI, and enterprise-grade reliability.
+ASZ Cam OS transforma tu Raspberry Pi en un sistema de cámara dedicado de alto rendimiento con sincronización en la nube, interfaz profesional y confiabilidad de nivel empresarial.
 
 ![ASZ Cam OS](assets/banner.png)
 
-## ✨ Key Features
+## ✨ Características Principales
 
-### 🚀 **Lightning Fast Performance**
-- **&lt;10 Second Boot Time**: Optimized boot sequence gets you shooting faster
-- **Hardware Acceleration**: Full GPU utilization for smooth preview and processing
-- **Real-time Preview**: Low-latency camera preview with professional controls
-- **Instant Capture**: Minimal shutter lag with burst mode support
+### 🚀 **Rendimiento Ultra Rápido**
+- **&lt;10 Segundos de Arranque**: Secuencia de arranque optimizada para empezar a fotografiar más rápido
+- **Aceleración de Hardware**: Utilización completa de GPU para vista previa y procesamiento fluido
+- **Vista Previa en Tiempo Real**: Vista previa de cámara de baja latencia con controles profesionales
+- **Captura Instantánea**: Retraso mínimo del obturador con soporte para modo ráfaga
 
-### 📷 **Professional Camera System**
-- **libCamera Integration**: Advanced Raspberry Pi camera support with all modules
-- **Manual Controls**: ISO, exposure, white balance, and focus control
-- **Multi-format Support**: JPEG, PNG, and RAW capture capabilities
-- **High Resolution**: Up to 4K photo capture with multiple quality settings
+### 📷 **Sistema de Cámara Profesional**
+- **Integración libCamera**: Soporte avanzado para cámaras Raspberry Pi con todos los módulos
+- **Controles Manuales**: Control de ISO, exposición, balance de blancos y enfoque
+- **Soporte Multi-formato**: Capacidades de captura JPEG, PNG y RAW
+- **Alta Resolución**: Captura de fotos hasta 4K con múltiples configuraciones de calidad
 
-### ☁️ **Intelligent Cloud Sync**
-- **Google Photos Integration**: Automatic backup with OAuth2 authentication
-- **Smart Upload**: Priority queuing, retry logic, and duplicate prevention
-- **Bandwidth Management**: Optimized uploads with compression options
-- **Offline Capability**: Full functionality without internet connection
+### ☁️ **Sincronización Inteligente en la Nube**
+- **Integración con Google Photos**: Respaldo automático con autenticación OAuth2
+- **Carga Inteligente**: Colas de prioridad, lógica de reintento y prevención de duplicados
+- **Gestión de Ancho de Banda**: Cargas optimizadas con opciones de compresión
+- **Capacidad Offline**: Funcionalidad completa sin conexión a internet
 
-### 🎨 **Modern User Interface**
-- **Touch Optimized**: Responsive design for touchscreens and traditional displays
-- **Professional Typography**: SFCamera-inspired font system
-- **Intuitive Navigation**: Clean, photographer-focused interface
-- **Real-time Status**: Live sync progress, storage, and system monitoring
+### 🎨 **Interfaz de Usuario Moderna**
+- **Optimizada para Táctil**: Diseño responsivo para pantallas táctiles y pantallas tradicionales
+- **Tipografía Profesional**: Sistema de fuentes inspirado en SFCamera
+- **Navegación Intuitiva**: Interfaz limpia centrada en el fotógrafo
+- **Estado en Tiempo Real**: Progreso de sincronización en vivo, almacenamiento y monitoreo del sistema
 
-### 🔧 **Enterprise Ready**
-- **Automated Installation**: One-command deployment with full system configuration
-- **Systemd Integration**: Reliable service management with auto-restart
-- **Comprehensive Logging**: Detailed system monitoring and troubleshooting
-- **Security Hardened**: Minimal attack surface with encrypted credentials
+### 🔧 **Listo para Empresas**
+- **Instalación Automatizada**: Implementación con un comando con configuración completa del sistema
+- **Integración Systemd**: Gestión de servicios confiable con auto-reinicio
+- **Registro Comprensivo**: Monitoreo detallado del sistema y solución de problemas
+- **Seguridad Reforzada**: Superficie de ataque mínima con credenciales encriptadas
 
-## 📋 System Requirements
+## 📋 Requisitos del Sistema
 
-### **Minimum Requirements**
+### **Requisitos Mínimos**
 - Raspberry Pi 4 Model B (2GB RAM)
-- MicroSD Card: 16GB Class 10
-- Camera: Pi Camera Module v2 or USB camera
-- Display: HDMI monitor or touchscreen
-- Power: 5V/3A official power supply
+- Tarjeta MicroSD: 16GB Clase 10
+- Cámara: Módulo de Cámara Pi v2 o cámara USB
+- Pantalla: Monitor HDMI o pantalla táctil
+- Alimentación: Fuente oficial de 5V/3A
 
-### **Recommended Setup**
-- Raspberry Pi 4 (4GB or 8GB RAM)
-- High-speed MicroSD: 32GB+ A2-rated card
-- Camera: Pi Camera Module v3 for best quality
-- Display: Official 7" touchscreen for portable operation
-- Storage: Additional USB 3.0 drive for photo storage
+### **Configuración Recomendada**
+- Raspberry Pi 4 (4GB u 8GB RAM)
+- MicroSD de alta velocidad: Tarjeta de 32GB+ clasificación A2
+- Cámara: Módulo de Cámara Pi v3 para la mejor calidad
+- Pantalla: Pantalla táctil oficial de 7" para operación portátil
+- Almacenamiento: Disco USB 3.0 adicional para almacenamiento de fotos
 
-### **Supported Hardware**
-- **Single Board Computers**: Raspberry Pi 4, Pi 400
-- **Cameras**: All Pi Camera modules, USB UVC cameras
-- **Displays**: HDMI monitors, Pi touchscreen, most LCD panels
-- **Storage**: MicroSD, USB drives, network storage
+### **Hardware Soportado**
+- **Computadoras de Placa Única**: Raspberry Pi 4, Pi 400
+- **Cámaras**: Todos los módulos de Cámara Pi, cámaras USB UVC
+- **Pantallas**: Monitores HDMI, pantalla táctil Pi, la mayoría de paneles LCD
+- **Almacenamiento**: MicroSD, discos USB, almacenamiento en red
 
-## 🚀 Quick Start
+## 🚀 Inicio Rápido
 
-### **One-Line Installation**
+### **Instalación con Una Línea**
 ```bash
 curl -fsSL https://raw.githubusercontent.com/mynameisrober/ASZ-Cam-OS/main/scripts/install.sh | sudo bash
 ```
 
-### **Manual Installation**
+### **Instalación Manual**
 ```bash
-# 1. Clone repository
+# 1. Clonar repositorio
 git clone https://github.com/mynameisrober/ASZ-Cam-OS.git
 cd ASZ-Cam-OS
 
-# 2. Run installer
+# 2. Ejecutar instalador
 chmod +x scripts/install.sh
 sudo ./scripts/install.sh
 
-# 3. Reboot system
+# 3. Reiniciar sistema
 sudo reboot
 ```
 
-**That's it!** ASZ Cam OS will start automatically after reboot.
+**¡Eso es todo!** ASZ Cam OS se iniciará automáticamente después del reinicio.
 
-## 📖 Documentation
+## 📖 Documentación
 
-### **User Documentation**
-- **[📥 Installation Guide](docs/INSTALLATION.md)** - Complete setup instructions
-- **[👤 User Guide](docs/USER_GUIDE.md)** - How to use ASZ Cam OS
-- **[🔧 Troubleshooting](docs/TROUBLESHOOTING.md)** - Problem solving guide
+### **Documentación del Usuario**
+- **[📥 Guía de Instalación](docs/INSTALACION.md)** - Instrucciones completas de configuración
+- **[👤 Guía del Usuario](docs/GUIA_USUARIO.md)** - Cómo usar ASZ Cam OS
+- **[🔧 Solución de Problemas](docs/SOLUCION_PROBLEMAS.md)** - Guía de resolución de problemas
 
-### **Developer Resources**
-- **[💻 Developer Guide](docs/DEVELOPER_GUIDE.md)** - Contributing and development
-- **[🏗️ Architecture Overview](#architecture)** - System design and components
-- **[🔌 API Reference](#api-reference)** - Programming interfaces
+### **Recursos para Desarrolladores**
+- **[💻 Guía del Desarrollador](docs/GUIA_DESARROLLADOR.md)** - Contribución y desarrollo
+- **[🏗️ Descripción de Arquitectura](#architecture)** - Diseño del sistema y componentes
+- **[🔌 Referencia de API](#api-reference)** - Interfaces de programación
 
-## 🏗️ Architecture
+## 🏗️ Arquitectura
 
-ASZ Cam OS is built with a modular, service-oriented architecture:
+ASZ Cam OS está construido con una arquitectura modular orientada a servicios:
 
 ```
 ┌─────────────────────────────────────────┐
-│             User Interface              │
-│  Camera View • Gallery • Settings      │
+│           Interfaz de Usuario           │
+│  Vista de Cámara • Galería • Ajustes   │
 ├─────────────────────────────────────────┤
-│            Core Services                │
-│  System • Camera • Sync • Storage      │
+│          Servicios Principales          │
+│  Sistema • Cámara • Sincronización •   │
+│           Almacenamiento                │
 ├─────────────────────────────────────────┤
-│          Hardware Layer                 │
-│  libCamera • GPIO • Display • Network  │
+│             Capa de Hardware            │
+│  libCamera • GPIO • Pantalla • Red     │
 ├─────────────────────────────────────────┤
-│           Cloud Integration             │
-│  Google Photos API • OAuth2 • Upload   │
+│         Integración en la Nube          │
+│  Google Photos API • OAuth2 • Carga    │
 └─────────────────────────────────────────┘
 ```
 
-### **Core Components**
+### **Componentes Principales**
 
-#### **System Manager**
-Central coordinator managing system lifecycle, service initialization, and graceful shutdown with comprehensive error handling.
+#### **Gestor del Sistema**
+Coordinador central que gestiona el ciclo de vida del sistema, inicialización de servicios y apagado ordenado con manejo comprensivo de errores.
 
-#### **Camera Service** 
-Hardware abstraction layer providing unified interface to Raspberry Pi cameras and USB devices with advanced controls.
+#### **Servicio de Cámara** 
+Capa de abstracción de hardware que proporciona interfaz unificada para cámaras Raspberry Pi y dispositivos USB con controles avanzados.
 
-#### **Sync Service**
-Intelligent cloud synchronization with priority queuing, retry logic, duplicate detection, and bandwidth optimization.
+#### **Servicio de Sincronización**
+Sincronización inteligente en la nube con colas de prioridad, lógica de reintento, detección de duplicados y optimización de ancho de banda.
 
-#### **UI Framework**
-Modern PyQt6-based interface with touch optimization, responsive design, and professional photography workflows.
+#### **Marco de Interfaz**
+Interfaz moderna basada en PyQt6 con optimización táctil, diseño responsivo y flujos de trabajo de fotografía profesional.
 
 ## 🔌 API Reference
 
