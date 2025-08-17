@@ -16,7 +16,7 @@ import numpy as np
 from PIL import Image
 
 from .libcamera_backend import LibCameraBackend
-from ..config.settings import settings
+from config.settings import settings
 
 
 class CameraService(QObject):

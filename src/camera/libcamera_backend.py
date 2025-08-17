@@ -16,7 +16,7 @@ import time
 import cv2
 import numpy as np
 
-from ..config.settings import settings
+from config.settings import settings
 
 
 class LibCameraBackend:

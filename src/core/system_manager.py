@@ -16,7 +16,7 @@ from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import QTimer, QObject, pyqtSignal
 from PyQt6.QtGui import QFont, QFontDatabase
 
-from ..config.settings import settings
+from config.settings import settings
 
 
 class SystemManager(QObject):
@@ -194,7 +194,7 @@ class SystemManager(QObject):
     def _initialize_camera(self) -> bool:
         """Initialize camera service."""
         try:
-            from ..camera.camera_service import CameraService
+            from camera.camera_service import CameraService
             self.camera_service = CameraService()
             self.camera_service.error_occurred.connect(self.camera_error)
             
@@ -219,7 +219,7 @@ class SystemManager(QObject):
                 self.logger.info("Sync service disabled in settings")
                 return True
             
-            from ..sync.sync_service import SyncService
+            from sync.sync_service import SyncService
             self.sync_service = SyncService()
             self.sync_service.status_changed.connect(self.sync_status_changed)
             
@@ -240,7 +240,7 @@ class SystemManager(QObject):
     def _initialize_main_window(self) -> bool:
         """Initialize main application window."""
         try:
-            from ..ui.main_window import MainWindow
+            from ui.main_window import MainWindow
             self.main_window = MainWindow(
                 camera_service=self.camera_service,
                 sync_service=self.sync_service

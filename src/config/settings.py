@@ -80,6 +80,13 @@ class Settings:
     
     def _ensure_directories(self):
         """Ensure all required directories exist."""
+        # Use development-friendly paths if not on Raspberry Pi
+        if not self._is_raspberry_pi():
+            home = Path.home()
+            self.system.data_directory = str(home / "ASZCam")
+            self.system.photos_directory = str(home / "ASZCam" / "Photos")
+            self.system.log_file = str(home / "ASZCam" / "aszcam.log")
+        
         directories = [
             self.system.data_directory,
             self.system.photos_directory,
@@ -88,6 +95,15 @@ class Settings:
         
         for directory in directories:
             Path(directory).mkdir(parents=True, exist_ok=True)
+    
+    def _is_raspberry_pi(self) -> bool:
+        """Check if running on Raspberry Pi."""
+        try:
+            with open('/proc/cpuinfo', 'r') as f:
+                cpuinfo = f.read()
+                return 'Raspberry Pi' in cpuinfo or 'BCM' in cpuinfo
+        except:
+            return False
     
     def load_config(self):
         """Load configuration from file."""

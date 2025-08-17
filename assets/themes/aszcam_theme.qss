@@ -1,0 +1,117 @@
+/* ASZ Cam OS - Minimalist White/Grey Theme */
+
+/* Global Application Styles */
+QApplication {
+    background-color: #FFFFFF;
+    color: #333333;
+    font-family: "SFCamera", "Segoe UI", "Arial", sans-serif;
+    font-size: 12pt;
+}
+
+/* Main Window */
+QMainWindow {
+    background-color: #FFFFFF;
+    color: #333333;
+}
+
+/* Widget Base Styles */
+QWidget {
+    background-color: #FFFFFF;
+    color: #333333;
+    border: none;
+}
+
+/* Buttons */
+QPushButton {
+    background-color: #F8F8F8;
+    color: #333333;
+    border: 1px solid #E0E0E0;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-weight: 500;
+    font-size: 14pt;
+    min-height: 20px;
+}
+
+QPushButton:hover {
+    background-color: #F0F0F0;
+    border-color: #D0D0D0;
+}
+
+QPushButton:pressed {
+    background-color: #E8E8E8;
+    border-color: #C0C0C0;
+}
+
+QPushButton:disabled {
+    background-color: #F8F8F8;
+    color: #A0A0A0;
+    border-color: #E8E8E8;
+}
+
+/* Primary Button */
+QPushButton.primary {
+    background-color: #FFFFFF;
+    color: #333333;
+    border: 2px solid #333333;
+    font-weight: 600;
+}
+
+QPushButton.primary:hover {
+    background-color: #333333;
+    color: #FFFFFF;
+}
+
+/* Camera Capture Button */
+QPushButton#captureButton {
+    background-color: #FFFFFF;
+    border: 3px solid #333333;
+    border-radius: 35px;
+    min-width: 70px;
+    min-height: 70px;
+    max-width: 70px;
+    max-height: 70px;
+    font-size: 16pt;
+    font-weight: 600;
+}
+
+QPushButton#captureButton:hover {
+    background-color: #F8F8F8;
+}
+
+QPushButton#captureButton:pressed {
+    background-color: #333333;
+    color: #FFFFFF;
+}
+
+/* Labels */
+QLabel {
+    color: #333333;
+    background-color: transparent;
+    font-size: 14pt;
+}
+
+QLabel.title {
+    font-size: 24pt;
+    font-weight: 600;
+    color: #333333;
+}
+
+QLabel.subtitle {
+    font-size: 16pt;
+    font-weight: 500;
+    color: #666666;
+}
+
+QLabel.caption {
+    font-size: 12pt;
+    color: #888888;
+}
+
+/* Camera Preview Area */
+QLabel#cameraPreview {
+    background-color: #F8F8F8;
+    border: 2px solid #E0E0E0;
+    border-radius: 8px;
+    min-height: 300px;
+}
