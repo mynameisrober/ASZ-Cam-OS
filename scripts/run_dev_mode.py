@@ -14,11 +14,12 @@ import logging
 import platform
 from pathlib import Path
 
-# Add src to path
+# Setup paths for proper package imports
 current_dir = Path(__file__).parent
 project_root = current_dir.parent
 src_dir = project_root / 'src'
-sys.path.insert(0, str(src_dir))
+# Add project root to sys.path so src can be imported as a package
+sys.path.insert(0, str(project_root))
 
 def setup_logging(log_level: str = 'DEBUG', log_to_file: bool = True):
     """Setup logging for development mode."""
@@ -52,7 +53,7 @@ def setup_dev_environment(args):
     # Set base development environment variables
     os.environ['ASZ_DEV_MODE'] = 'true'
     os.environ['ASZ_SIMULATION_MODE'] = 'true'
-    os.environ['PYTHONPATH'] = str(src_dir)
+    os.environ['PYTHONPATH'] = str(project_root)
     
     # Camera mock settings
     if args.mock_camera:
@@ -152,30 +153,30 @@ def run_application():
         # Import main application
         logger.info("Importing main application...")
         
-        # Check if we can import the main modules
+        # Check if we can import the main modules with proper package paths
         try:
-            from core.system_manager import system_manager
+            from src.core.system_manager import system_manager
             logger.info("✓ System manager imported")
         except ImportError as e:
             logger.error(f"✗ Failed to import system manager: {e}")
             return 1
         
         try:
-            from camera.mock_libcamera import MockLibCamera
+            from src.camera.mock_libcamera import MockLibCamera
             logger.info("✓ Mock camera imported")
         except ImportError as e:
             logger.error(f"✗ Failed to import mock camera: {e}")
             return 1
         
         try:
-            from core.rpi_simulator import RPiSimulator
+            from src.core.rpi_simulator import RPiSimulator
             logger.info("✓ RPi simulator imported")
         except ImportError as e:
             logger.error(f"✗ Failed to import RPi simulator: {e}")
             return 1
         
-        # Import and run main
-        from main import main as app_main
+        # Import and run main application directly
+        from src.main import main as app_main
         logger.info("Starting main application...")
         return app_main()
         
@@ -199,7 +200,7 @@ def create_test_environment():
     try:
         # Test mock camera
         logger.info("Testing mock camera...")
-        from camera.mock_libcamera import MockLibCamera
+        from src.camera.mock_libcamera import MockLibCamera
         mock_camera = MockLibCamera()
         if mock_camera.initialize():
             logger.info("✓ Mock camera initialized successfully")
@@ -209,7 +210,7 @@ def create_test_environment():
         
         # Test RPi simulator
         logger.info("Testing RPi simulator...")
-        from core.rpi_simulator import RPiSimulator
+        from src.core.rpi_simulator import RPiSimulator
         rpi_sim = RPiSimulator()
         system_info = rpi_sim.get_system_info()
         logger.info(f"✓ RPi simulator working - Model: {system_info['model']}")

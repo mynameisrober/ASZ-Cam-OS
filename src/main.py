@@ -12,11 +12,12 @@ import sys
 import os
 from pathlib import Path
 
-# Add src directory to Python path for imports
-current_dir = Path(__file__).parent
-sys.path.insert(0, str(current_dir))
+# Setup proper package imports - add project root to Python path
+current_dir = Path(__file__).parent  # This is src/
+project_root = current_dir.parent    # This is the project root
+sys.path.insert(0, str(project_root))
 
-from core.system_manager import system_manager
+from src.core.system_manager import system_manager
 
 
 def main():
