@@ -17,6 +17,14 @@ from PIL import Image
 
 from .libcamera_backend import LibCameraBackend
 from ..config.settings import settings
+import os
+
+# Check if we should use mock camera
+USE_MOCK_CAMERA = (
+    os.getenv('ASZ_DEV_MODE') == 'true' or
+    os.getenv('ASZ_MOCK_CAMERA') == 'true' or
+    os.getenv('ASZ_SIMULATION_MODE') == 'true'
+)
 
 
 class CameraService(QObject):
@@ -43,8 +51,15 @@ class CameraService(QObject):
         try:
             self.logger.info("Initializing camera service...")
             
-            # Initialize camera backend
-            self.backend = LibCameraBackend()
+            # Choose backend based on environment
+            if USE_MOCK_CAMERA:
+                self.logger.info("Using mock camera backend for development")
+                from .mock_libcamera import MockLibCamera
+                self.backend = MockLibCamera()
+            else:
+                self.logger.info("Using real libcamera backend")
+                self.backend = LibCameraBackend()
+            
             if not self.backend.initialize():
                 self.error_occurred.emit("Failed to initialize camera backend")
                 return False

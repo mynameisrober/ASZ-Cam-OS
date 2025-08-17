@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  aszcam-dev:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.dev
+    container_name: aszcam-dev-container
+    volumes:
+      - ..:/app
+      - aszcam-logs:/app/logs
+      - aszcam-photos:/app/dev_photos
+      - aszcam-temp:/app/temp
+    environment:
+      - ASZ_DEV_MODE=true
+      - ASZ_SIMULATION_MODE=true
+      - ASZ_MOCK_CAMERA=true
+      - ASZ_MOCK_RPI=true
+      - ASZ_WINDOWED_MODE=true
+      - PYTHONPATH=/app/src
+    ports:
+      - "8888:8888"  # Jupyter notebook
+    stdin_open: true
+    tty: true
+    command: >
+      bash -c "
+        echo 'ASZ Cam OS Development Environment Ready!';
+        echo 'Run: python scripts/run_dev_mode.py --test-env-only';
+        echo 'Or: python tests/test_dev_setup.py';
+        echo 'For Jupyter: jupyter notebook --ip=0.0.0.0 --no-browser';
+        bash
+      "
+
+  # Testing service for CI/CD
+  aszcam-test:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.dev
+    container_name: aszcam-test-container
+    volumes:
+      - ..:/app
+    environment:
+      - ASZ_DEV_MODE=true
+      - ASZ_SIMULATION_MODE=true
+      - ASZ_TEST_MODE=true
+      - PYTHONPATH=/app/src
+    command: python tests/test_dev_setup.py
+
+  # Documentation service
+  aszcam-docs:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.dev
+    container_name: aszcam-docs-container
+    volumes:
+      - ..:/app
+      - aszcam-docs:/app/docs_build
+    ports:
+      - "8000:8000"
+    working_dir: /app/docs
+    command: >
+      bash -c "
+        pip install --user mkdocs mkdocs-material;
+        echo 'Starting documentation server...';
+        echo 'Available at: http://localhost:8000';
+        python -m http.server 8000
+      "
+
+volumes:
+  aszcam-logs:
+    driver: local
+  aszcam-photos:
+    driver: local  
+  aszcam-temp:
+    driver: local
+  aszcam-docs:
+    driver: local
+
+networks:
+  default:
+    name: aszcam-dev-network
