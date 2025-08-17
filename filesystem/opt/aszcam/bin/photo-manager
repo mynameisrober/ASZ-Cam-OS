@@ -1,0 +1,12 @@
+#!/bin/bash
+# ASZ Cam Photo Manager - Photo organization service
+# This is a placeholder implementation
+
+echo "ASZ Cam Photo Manager starting..."
+echo "Monitoring /var/aszcam/photos for new images..."
+
+# Placeholder main loop
+while true; do
+    sleep 30
+    echo "Photo manager check - $(date)"
+done

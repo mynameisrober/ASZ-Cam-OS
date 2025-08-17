@@ -1,0 +1,1 @@
+ASZ_CAM_OS

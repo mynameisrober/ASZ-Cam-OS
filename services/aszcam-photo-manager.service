@@ -1,0 +1,26 @@
+[Unit]
+Description=ASZ Cam Photo Manager Service
+Documentation=man:aszcam-photo-manager(8)
+After=aszcam-camera.service
+Requires=aszcam-camera.service
+
+[Service]
+Type=simple
+ExecStart=/opt/aszcam/bin/photo-manager
+Restart=always
+RestartSec=10
+User=aszcam
+Group=aszcam
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/aszcam
+
+# Working directory
+WorkingDirectory=/var/aszcam/photos
+
+[Install]
+WantedBy=multi-user.target

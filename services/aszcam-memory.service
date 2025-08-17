@@ -1,0 +1,25 @@
+[Unit]
+Description=ASZ Cam Memory Service (This Day Last Year)
+Documentation=man:aszcam-memory(8)
+After=aszcam-photo-manager.service
+
+[Service]
+Type=simple
+ExecStart=/opt/aszcam/bin/memory-service
+Restart=always
+RestartSec=60
+User=aszcam
+Group=aszcam
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/aszcam
+
+# Run daily memory check
+Environment=MEMORY_CHECK_INTERVAL=86400
+
+[Install]
+WantedBy=multi-user.target

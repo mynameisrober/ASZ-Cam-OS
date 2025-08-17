@@ -1,0 +1,25 @@
+[Unit]
+Description=ASZ Cam Network Manager
+Documentation=man:aszcam-network(8)
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+ExecStart=/opt/aszcam/bin/network-manager
+Restart=always
+RestartSec=10
+User=root
+Group=root
+
+# Security settings (less restrictive for network management)
+NoNewPrivileges=false
+ProtectSystem=strict
+ReadWritePaths=/var/aszcam /etc/wpa_supplicant
+
+# Network management capabilities
+AmbientCapabilities=CAP_NET_ADMIN CAP_NET_RAW
+CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_RAW
+
+[Install]
+WantedBy=multi-user.target

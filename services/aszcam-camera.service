@@ -1,0 +1,34 @@
+[Unit]
+Description=ASZ Cam Camera Service
+Documentation=man:aszcam-camera(8)
+After=multi-user.target
+Wants=network.target
+After=network.target
+
+[Service]
+Type=notify
+ExecStart=/opt/aszcam/bin/camera-service
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=5
+User=aszcam
+Group=aszcam
+
+# Performance optimizations
+Nice=-10
+IOSchedulingClass=1
+IOSchedulingPriority=4
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/aszcam
+
+# Resource limits
+LimitNOFILE=4096
+LimitMEMLOCK=64M
+
+[Install]
+WantedBy=multi-user.target

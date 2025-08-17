@@ -1,0 +1,11 @@
+#!/bin/bash
+# ASZ Cam Memory Service - "This day last year" feature
+# This is a placeholder implementation
+
+echo "ASZ Cam Memory Service starting..."
+echo "Checking for memories from previous years..."
+
+while true; do
+    sleep 86400  # Daily check
+    echo "Memory check - Looking for photos from this day in previous years - $(date)"
+done
