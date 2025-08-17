@@ -130,216 +130,216 @@ Sincronización inteligente en la nube con colas de prioridad, lógica de reinte
 #### **Marco de Interfaz**
 Interfaz moderna basada en PyQt6 con optimización táctil, diseño responsivo y flujos de trabajo de fotografía profesional.
 
-## 🔌 API Reference
+## 🔌 Referencia de API
 
-### **Camera Control**
+### **Control de Cámara**
 ```python
 from src.camera.camera_service import CameraService
 
 camera = CameraService()
 camera.initialize()
 
-# Capture photo
+# Capturar foto
 photo_path = camera.capture_photo()
 
-# Configure settings
+# Configurar ajustes
 camera.set_camera_setting('iso', 800)
 camera.set_camera_setting('white_balance', 'daylight')
 ```
 
-### **Sync Management**
+### **Gestión de Sincronización**
 ```python
 from src.sync.sync_service import SyncService
 
 sync = SyncService()
 sync.initialize()
 
-# Sync specific photo
+# Sincronizar foto específica
 sync.sync_photo('/path/to/photo.jpg', priority=1)
 
-# Monitor sync status
+# Monitorear estado de sincronización
 stats = sync.get_sync_stats()
-print(f"Photos synced: {stats['total_photos_synced']}")
+print(f"Fotos sincronizadas: {stats['total_photos_synced']}")
 ```
 
-### **Configuration**
+### **Configuración**
 ```python
 from src.config.settings import settings
 
-# Access camera settings
+# Acceder a configuraciones de cámara
 resolution = settings.camera.default_resolution
 quality = settings.camera.quality
 
-# Modify sync settings
+# Modificar configuraciones de sincronización
 settings.sync.enabled = True
-settings.sync.album_name = "My Camera"
+settings.sync.album_name = "Mi Cámara"
 settings.save_config()
 ```
 
-## 🛠️ Development
+## 🛠️ Desarrollo
 
-### **Development Setup**
+### **Configuración de Desarrollo**
 ```bash
-# Clone and setup
+# Clonar y configurar
 git clone https://github.com/mynameisrober/ASZ-Cam-OS.git
 cd ASZ-Cam-OS
 
-# Create virtual environment
+# Crear entorno virtual
 python3 -m venv venv
 source venv/bin/activate
 
-# Install dependencies
+# Instalar dependencias
 pip install -r requirements.txt
 pip install -r requirements-dev.txt
 
-# Run in development mode
+# Ejecutar en modo desarrollo
 python src/main.py --dev --mock-camera
 ```
 
-### **Contributing**
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'feat: add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
+### **Contribuir**
+1. Hacer fork del repositorio
+2. Crear rama de funcionalidad (`git checkout -b feature/funcionalidad-increible`)
+3. Confirmar cambios (`git commit -m 'feat: agregar funcionalidad increíble'`)
+4. Subir a rama (`git push origin feature/funcionalidad-increible`)
+5. Abrir Pull Request
 
-### **Code Quality**
-- **Style**: Black formatter, flake8 linting
-- **Type Checking**: mypy static analysis
-- **Testing**: pytest with 90%+ coverage
-- **Documentation**: Google-style docstrings
+### **Calidad de Código**
+- **Estilo**: Formateador Black, linting flake8
+- **Verificación de Tipos**: Análisis estático mypy
+- **Pruebas**: pytest con 90%+ de cobertura
+- **Documentación**: Docstrings estilo Google
 
-## 🔒 Security & Privacy
+## 🔒 Seguridad y Privacidad
 
-### **Security Features**
-- **Minimal Attack Surface**: Purpose-built system with only essential services
-- **Encrypted Credentials**: OAuth2 tokens encrypted at rest
-- **Network Security**: Firewall configuration and secure communication
-- **Regular Updates**: Automated security patch management
+### **Características de Seguridad**
+- **Superficie de Ataque Mínima**: Sistema construido específicamente con solo servicios esenciales
+- **Credenciales Encriptadas**: Tokens OAuth2 encriptados en reposo
+- **Seguridad de Red**: Configuración de firewall y comunicación segura
+- **Actualizaciones Regulares**: Gestión automatizada de parches de seguridad
 
-### **Privacy Commitment**
-- **Local-First**: Full functionality without cloud dependency
-- **Data Control**: Complete control over photo storage and sharing
-- **Transparent Sync**: Clear visibility into what data is synchronized
-- **Opt-in Cloud**: Cloud features are completely optional
+### **Compromiso con la Privacidad**
+- **Local-First**: Funcionalidad completa sin dependencia de la nube
+- **Control de Datos**: Control completo sobre almacenamiento y compartición de fotos
+- **Sincronización Transparente**: Visibilidad clara sobre qué datos se sincronizan
+- **Nube Opcional**: Las funciones de nube son completamente opcionales
 
-## 📊 Performance
+## 📊 Rendimiento
 
 ### **Benchmarks**
-- **Boot Time**: < 10 seconds from power-on to camera ready
-- **Capture Speed**: < 200ms shutter lag in optimal conditions
-- **Preview Latency**: < 100ms camera-to-display latency
-- **Sync Performance**: Up to 50 photos/minute upload (network dependent)
+- **Tiempo de Arranque**: < 10 segundos desde encendido hasta cámara lista
+- **Velocidad de Captura**: < 200ms de retraso del obturador en condiciones óptimas
+- **Latencia de Vista Previa**: < 100ms de latencia cámara-a-pantalla
+- **Rendimiento de Sincronización**: Hasta 50 fotos/minuto de carga (dependiente de la red)
 
-### **Resource Usage**
-- **RAM**: 200-400MB typical usage (excluding buffers)
-- **Storage**: 2GB base system + photos + temporary files
-- **CPU**: < 20% average load during normal operation
-- **GPU**: Hardware acceleration for preview and processing
+### **Uso de Recursos**
+- **RAM**: 200-400MB uso típico (excluyendo buffers)
+- **Almacenamiento**: Sistema base de 2GB + fotos + archivos temporales
+- **CPU**: < 20% carga promedio durante operación normal
+- **GPU**: Aceleración de hardware para vista previa y procesamiento
 
-## 🎯 Use Cases
+## 🎯 Casos de Uso
 
-### **Personal Photography**
-- **Family Events**: Reliable capture with automatic backup
-- **Travel Photography**: Offline capability with sync when connected
-- **Home Security**: Motion-triggered capture with cloud storage
-- **Time-lapse Projects**: Automated capture sequences
+### **Fotografía Personal**
+- **Eventos Familiares**: Captura confiable con respaldo automático
+- **Fotografía de Viajes**: Capacidad offline con sincronización cuando hay conexión
+- **Seguridad Doméstica**: Captura activada por movimiento con almacenamiento en la nube
+- **Proyectos Time-lapse**: Secuencias de captura automatizadas
 
-### **Professional Applications**
-- **Event Photography**: Rapid capture with immediate backup
-- **Product Photography**: Consistent quality with manual controls
-- **Scientific Documentation**: Metadata preservation and organization
-- **Educational Projects**: Student-friendly interface with cloud sharing
+### **Aplicaciones Profesionales**
+- **Fotografía de Eventos**: Captura rápida con respaldo inmediato
+- **Fotografía de Productos**: Calidad consistente con controles manuales
+- **Documentación Científica**: Preservación y organización de metadatos
+- **Proyectos Educativos**: Interfaz amigable para estudiantes con compartición en la nube
 
-### **IoT and Automation**
-- **Home Automation**: Integration with smart home systems
-- **Remote Monitoring**: Network-accessible camera system
-- **Agricultural Monitoring**: Weather-resistant deployment options
-- **Security Systems**: Motion detection and automated alerts
+### **IoT y Automatización**
+- **Automatización del Hogar**: Integración con sistemas domésticos inteligentes
+- **Monitoreo Remoto**: Sistema de cámara accesible por red
+- **Monitoreo Agrícola**: Opciones de implementación resistentes al clima
+- **Sistemas de Seguridad**: Detección de movimiento y alertas automatizadas
 
-## 🌟 Why ASZ Cam OS?
+## 🌟 ¿Por qué ASZ Cam OS?
 
-### **vs. Generic Camera Software**
-- ✅ **Optimized Performance**: Purpose-built for Raspberry Pi hardware
-- ✅ **Professional Features**: Manual controls and advanced settings
-- ✅ **Reliable Sync**: Robust cloud integration with error recovery
-- ✅ **Complete Solution**: Hardware + software + cloud in one package
+### **vs. Software de Cámara Genérico**
+- ✅ **Rendimiento Optimizado**: Construido específicamente para hardware Raspberry Pi
+- ✅ **Características Profesionales**: Controles manuales y configuraciones avanzadas
+- ✅ **Sincronización Confiable**: Integración robusta en la nube con recuperación de errores
+- ✅ **Solución Completa**: Hardware + software + nube en un paquete
 
-### **vs. DIY Solutions**
-- ✅ **Production Ready**: Thousands of hours of development and testing
-- ✅ **Comprehensive Documentation**: Complete guides and troubleshooting
-- ✅ **Active Support**: Regular updates and community support
-- ✅ **Professional UI**: Polished interface designed for photographers
+### **vs. Soluciones DIY**
+- ✅ **Listo para Producción**: Miles de horas de desarrollo y pruebas
+- ✅ **Documentación Comprensiva**: Guías completas y solución de problemas
+- ✅ **Soporte Activo**: Actualizaciones regulares y soporte de la comunidad
+- ✅ **Interfaz Profesional**: Interfaz pulida diseñada para fotógrafos
 
-### **vs. Commercial Alternatives**
-- ✅ **Open Source**: Full source code access and customization
-- ✅ **No Vendor Lock-in**: Use your own Google account and storage
-- ✅ **Cost Effective**: No monthly fees or licensing costs
-- ✅ **Privacy Focused**: Your data stays under your control
+### **vs. Alternativas Comerciales**
+- ✅ **Código Abierto**: Acceso completo al código fuente y personalización
+- ✅ **Sin Dependencia de Proveedor**: Usa tu propia cuenta de Google y almacenamiento
+- ✅ **Costo Efectivo**: Sin tarifas mensuales o costos de licencias
+- ✅ **Enfocado en Privacidad**: Tus datos permanecen bajo tu control
 
-## 🗓️ Roadmap
+## 🗓️ Hoja de Ruta
 
-### **Version 1.1** (Q2 2024)
-- [ ] **Video Recording**: Full HD video capture with compression
-- [ ] **Multi-Camera Support**: Connect and control multiple cameras
-- [ ] **Advanced Filters**: Real-time image effects and enhancement
-- [ ] **Mobile App**: Companion app for remote control
+### **Versión 1.1** (Q2 2024)
+- [ ] **Grabación de Video**: Captura de video Full HD con compresión
+- [ ] **Soporte Multi-Cámara**: Conectar y controlar múltiples cámaras
+- [ ] **Filtros Avanzados**: Efectos de imagen en tiempo real y mejoras
+- [ ] **Aplicación Móvil**: App complementaria para control remoto
 
-### **Version 1.2** (Q3 2024)
-- [ ] **AI Features**: Auto-tagging and smart organization
-- [ ] **Additional Cloud Providers**: Dropbox, OneDrive support
-- [ ] **Network Storage**: NAS and SMB share integration
-- [ ] **Advanced Automation**: Time-lapse and interval shooting
+### **Versión 1.2** (Q3 2024)
+- [ ] **Características IA**: Auto-etiquetado y organización inteligente
+- [ ] **Proveedores de Nube Adicionales**: Soporte para Dropbox, OneDrive
+- [ ] **Almacenamiento en Red**: Integración con NAS y comparticiones SMB
+- [ ] **Automatización Avanzada**: Captura time-lapse e intervalos
 
-### **Version 2.0** (Q4 2024)
-- [ ] **Multi-Platform**: Support for other SBCs and x86
-- [ ] **Plugin System**: Third-party extensions and customization
-- [ ] **Enterprise Features**: Multi-user support and administration
-- [ ] **Professional Workflow**: RAW processing and batch operations
+### **Versión 2.0** (Q4 2024)
+- [ ] **Multi-Plataforma**: Soporte para otros SBCs y x86
+- [ ] **Sistema de Plugins**: Extensiones de terceros y personalización
+- [ ] **Características Empresariales**: Soporte multi-usuario y administración
+- [ ] **Flujo de Trabajo Profesional**: Procesamiento RAW y operaciones por lotes
 
-## 💬 Community
+## 💬 Comunidad
 
-### **Get Involved**
-- **GitHub Discussions**: Questions, ideas, and showcases
-- **Discord Server**: Real-time community chat and support
-- **Reddit Community**: r/ASZCamOS for user discussions
-- **YouTube Channel**: Tutorials, demos, and project showcases
+### **Involúcrate**
+- **Discusiones en GitHub**: Preguntas, ideas y exhibiciones
+- **Servidor Discord**: Chat y soporte de la comunidad en tiempo real
+- **Comunidad Reddit**: r/ASZCamOS para discusiones de usuarios
+- **Canal YouTube**: Tutoriales, demos y exhibiciones del proyecto
 
-### **Support the Project**
-- ⭐ **Star this repository** to show support
-- 🐛 **Report bugs** to help improve stability
-- 💡 **Suggest features** for future development
-- 📝 **Contribute documentation** to help other users
-- 💻 **Submit pull requests** with improvements
+### **Apoya el Proyecto**
+- ⭐ **Dale estrella a este repositorio** para mostrar apoyo
+- 🐛 **Reporta errores** para ayudar a mejorar la estabilidad
+- 💡 **Sugiere características** para desarrollo futuro
+- 📝 **Contribuye documentación** para ayudar a otros usuarios
+- 💻 **Envía pull requests** con mejoras
 
-## 📄 License
+## 📄 Licencia
 
-ASZ Cam OS is released under the **MIT License** - see [LICENSE](LICENSE) file for details.
+ASZ Cam OS se distribuye bajo la **Licencia MIT** - consulta el archivo [LICENSE](LICENSE) para más detalles.
 
-### **What this means:**
-- ✅ **Commercial Use**: Use in commercial projects
-- ✅ **Modification**: Customize and adapt the code
-- ✅ **Distribution**: Share and redistribute freely
-- ✅ **Private Use**: Use for personal projects
-- ❗ **Attribution Required**: Include original copyright notice
+### **Qué significa esto:**
+- ✅ **Uso Comercial**: Usar en proyectos comerciales
+- ✅ **Modificación**: Personalizar y adaptar el código
+- ✅ **Distribución**: Compartir y redistribuir libremente
+- ✅ **Uso Privado**: Usar para proyectos personales
+- ❗ **Atribución Requerida**: Incluir aviso de copyright original
 
-## 🙏 Acknowledgments
+## 🙏 Reconocimientos
 
-### **Open Source Projects**
-- **[Raspberry Pi Foundation](https://www.raspberrypi.org/)** - Amazing hardware and software foundation
-- **[libcamera](https://libcamera.org/)** - Modern camera stack for Linux
-- **[PyQt6](https://www.riverbankcomputing.com/software/pyqt/)** - Powerful GUI framework
-- **[Google Photos API](https://developers.google.com/photos)** - Cloud storage integration
+### **Proyectos de Código Abierto**
+- **[Raspberry Pi Foundation](https://www.raspberrypi.org/)** - Increíble base de hardware y software
+- **[libcamera](https://libcamera.org/)** - Stack de cámara moderno para Linux
+- **[PyQt6](https://www.riverbankcomputing.com/software/pyqt/)** - Poderoso framework GUI
+- **[Google Photos API](https://developers.google.com/photos)** - Integración de almacenamiento en la nube
 
-### **Community Contributors**
-Special thanks to all contributors who have helped make ASZ Cam OS better through code, documentation, testing, and feedback.
+### **Contribuidores de la Comunidad**
+Agradecimientos especiales a todos los contribuidores que han ayudado a mejorar ASZ Cam OS a través de código, documentación, pruebas y retroalimentación.
 
 ---
 
 <div align="center">
 
-**🎯 Ready to transform your Raspberry Pi into a professional camera system?**
+**🎯 ¿Listo para transformar tu Raspberry Pi en un sistema de cámara profesional?**
 
-[📥 **Get Started**](docs/INSTALLATION.md) • [📚 **Documentation**](docs/) • [💬 **Community**](https://github.com/mynameisrober/ASZ-Cam-OS/discussions) • [🐛 **Issues**](https://github.com/mynameisrober/ASZ-Cam-OS/issues)
+[📥 **Comenzar**](docs/INSTALACION.md) • [📚 **Documentación**](docs/) • [💬 **Comunidad**](https://github.com/mynameisrober/ASZ-Cam-OS/discussions) • [🐛 **Issues**](https://github.com/mynameisrober/ASZ-Cam-OS/issues)
 
 </div>
