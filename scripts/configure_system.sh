@@ -1,24 +1,24 @@
 #!/bin/bash
-# ASZ Cam OS - System Configuration Script
-# Configures the operating system for optimal camera operation
-# Author: ASZ Development Team
-# Version: 1.0.0
+# ASZ Cam OS - Script de Configuración del Sistema
+# Configura el sistema operativo para operación óptima de cámara
+# Autor: Equipo de Desarrollo ASZ
+# Versión: 1.0.0
 
 set -e
 
-# Colors for output
+# Colores para salida
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-# Configuration
+# Configuración
 ASZ_USER="${ASZ_USER:-pi}"
 ASZ_HOME="/home/${ASZ_USER}"
 ASZ_INSTALL_DIR="${ASZ_INSTALL_DIR:-${ASZ_HOME}/ASZCam}"
 
-# Helper functions
+# Funciones auxiliares
 log_info() {
     echo -e "${BLUE}[Config]${NC} $1"
 }

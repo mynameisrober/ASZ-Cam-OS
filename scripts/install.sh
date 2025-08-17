@@ -1,41 +1,41 @@
 #!/bin/bash
-# ASZ Cam OS - Master Installation Script
-# Installs and configures ASZ Cam OS on Raspberry Pi
-# Author: ASZ Development Team
-# Version: 1.0.0
+# ASZ Cam OS - Script de Instalación Principal
+# Instala y configura ASZ Cam OS en Raspberry Pi
+# Autor: Equipo de Desarrollo ASZ
+# Versión: 1.0.0
 
-set -e  # Exit on any error
+set -e  # Salir en cualquier error
 
-# Colors for output
+# Colores para salida
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+NC='\033[0m' # Sin Color
 
-# Configuration
+# Configuración
 ASZ_USER="${ASZ_USER:-pi}"
 ASZ_HOME="/home/${ASZ_USER}"
 ASZ_INSTALL_DIR="${ASZ_INSTALL_DIR:-${ASZ_HOME}/ASZCam}"
 ASZ_SERVICE_USER="${ASZ_SERVICE_USER:-${ASZ_USER}}"
 PYTHON_VERSION="3.11"
 
-# Logging
+# Registro
 LOG_FILE="/tmp/aszcam_install.log"
 exec 1> >(tee -a ${LOG_FILE})
 exec 2> >(tee -a ${LOG_FILE} >&2)
 
-# Helper functions
+# Funciones auxiliares
 log_info() {
     echo -e "${BLUE}[INFO]${NC} $1"
 }
 
 log_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
+    echo -e "${GREEN}[ÉXITO]${NC} $1"
 }
 
 log_warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
+    echo -e "${YELLOW}[ADVERTENCIA]${NC} $1"
 }
 
 log_error() {
@@ -44,52 +44,52 @@ log_error() {
 
 check_root() {
     if [[ $EUID -ne 0 ]]; then
-        log_error "This script must be run as root (use sudo)"
+        log_error "Este script debe ejecutarse como root (usa sudo)"
         exit 1
     fi
 }
 
 check_raspberry_pi() {
     if ! grep -q "Raspberry Pi" /proc/cpuinfo; then
-        log_warning "This script is optimized for Raspberry Pi, but will attempt to install anyway"
+        log_warning "Este script está optimizado para Raspberry Pi, pero intentará instalar de todos modos"
     else
-        log_info "Raspberry Pi detected"
+        log_info "Raspberry Pi detectado"
     fi
 }
 
 show_header() {
     clear
     echo "==============================================="
-    echo "    ASZ Cam OS - Installation Script"
-    echo "         Version 1.0.0"
+    echo "    ASZ Cam OS - Script de Instalación"
+    echo "         Versión 1.0.0"
     echo "==============================================="
     echo ""
-    echo "This will install ASZ Cam OS on your system."
-    echo "Installation directory: ${ASZ_INSTALL_DIR}"
-    echo "Service user: ${ASZ_SERVICE_USER}"
+    echo "Esto instalará ASZ Cam OS en tu sistema."
+    echo "Directorio de instalación: ${ASZ_INSTALL_DIR}"
+    echo "Usuario de servicio: ${ASZ_SERVICE_USER}"
     echo ""
 }
 
 confirm_installation() {
-    read -p "Do you want to continue? (y/N): " -n 1 -r
+    read -p "¿Deseas continuar? (s/N): " -n 1 -r
     echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        log_info "Installation cancelled by user"
+    if [[ ! $REPLY =~ ^[SsYy]$ ]]; then
+        log_info "Instalación cancelada por el usuario"
         exit 0
     fi
 }
 
 update_system() {
-    log_info "Updating system packages..."
+    log_info "Actualizando paquetes del sistema..."
     apt-get update
     apt-get upgrade -y
-    log_success "System updated successfully"
+    log_success "Sistema actualizado exitosamente"
 }
 
 install_dependencies() {
-    log_info "Installing system dependencies..."
+    log_info "Instalando dependencias del sistema..."
     
-    # Essential packages
+    # Paquetes esenciales
     apt-get install -y \
         python3 \
         python3-pip \
@@ -249,65 +249,65 @@ configure_system() {
 }
 
 install_systemd_service() {
-    log_info "Installing systemd service..."
+    log_info "Instalando servicio systemd..."
     
     SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
     PROJECT_ROOT="$(dirname "${SCRIPT_DIR}")"
     
-    # Install service file
+    # Instalar archivo de servicio
     if [[ -f "${PROJECT_ROOT}/install/asz-cam-os.service" ]]; then
         cp "${PROJECT_ROOT}/install/asz-cam-os.service" "/etc/systemd/system/"
         
-        # Update service file with actual paths
+        # Actualizar archivo de servicio con rutas reales
         sed -i "s|{ASZ_INSTALL_DIR}|${ASZ_INSTALL_DIR}|g" "/etc/systemd/system/asz-cam-os.service"
         sed -i "s|{ASZ_USER}|${ASZ_USER}|g" "/etc/systemd/system/asz-cam-os.service"
         
         systemctl daemon-reload
         systemctl enable asz-cam-os.service
         
-        log_success "Systemd service installed and enabled"
+        log_success "Servicio systemd instalado y habilitado"
     else
-        log_warning "Service file not found, skipping service installation..."
+        log_warning "Archivo de servicio no encontrado, omitiendo instalación de servicio..."
     fi
 }
 
 run_validation() {
-    log_info "Running installation validation..."
+    log_info "Ejecutando validación de instalación..."
     
     SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
     if [[ -f "${SCRIPT_DIR}/validate_install.sh" ]]; then
         bash "${SCRIPT_DIR}/validate_install.sh"
     else
-        log_warning "Validation script not found, skipping validation..."
+        log_warning "Script de validación no encontrado, omitiendo validación..."
     fi
 }
 
 show_completion_message() {
     echo ""
     echo "==============================================="
-    log_success "ASZ Cam OS Installation Complete!"
+    log_success "¡Instalación de ASZ Cam OS Completada!"
     echo "==============================================="
     echo ""
-    echo "Installation Details:"
-    echo "- Install Directory: ${ASZ_INSTALL_DIR}"
-    echo "- Service User: ${ASZ_SERVICE_USER}"
-    echo "- Photos Directory: ${ASZ_HOME}/Pictures/ASZCam"
-    echo "- Config Directory: ${ASZ_HOME}/.config/aszcam"
-    echo "- Log File: /var/log/aszcam/aszcam.log"
+    echo "Detalles de Instalación:"
+    echo "- Directorio de Instalación: ${ASZ_INSTALL_DIR}"
+    echo "- Usuario de Servicio: ${ASZ_SERVICE_USER}"
+    echo "- Directorio de Fotos: ${ASZ_HOME}/Pictures/ASZCam"
+    echo "- Directorio de Configuración: ${ASZ_HOME}/.config/aszcam"
+    echo "- Archivo de Registro: /var/log/aszcam/aszcam.log"
     echo ""
-    echo "Next Steps:"
-    echo "1. Reboot your system: sudo reboot"
-    echo "2. The ASZ Cam OS will start automatically after reboot"
-    echo "3. Configure Google Photos sync in settings (optional)"
+    echo "Próximos Pasos:"
+    echo "1. Reinicia tu sistema: sudo reboot"
+    echo "2. ASZ Cam OS se iniciará automáticamente después del reinicio"
+    echo "3. Configura la sincronización con Google Photos en configuración (opcional)"
     echo ""
-    echo "Manual Start: sudo systemctl start asz-cam-os"
-    echo "View Logs: journalctl -u asz-cam-os -f"
+    echo "Inicio Manual: sudo systemctl start asz-cam-os"
+    echo "Ver Registros: journalctl -u asz-cam-os -f"
     echo ""
-    echo "Installation log saved to: ${LOG_FILE}"
+    echo "Registro de instalación guardado en: ${LOG_FILE}"
     echo ""
 }
 
-# Main installation process
+# Proceso principal de instalación
 main() {
     show_header
     confirm_installation

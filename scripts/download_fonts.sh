@@ -399,58 +399,58 @@ install_fontconfig() {
     # Install fontconfig if not present
     apt-get install -y fontconfig
     
-    # Copy font configuration
+    # Copiar configuración de fuentes
     cp "${FONTS_DIR}/qt-fonts.conf" "/etc/fonts/conf.d/99-aszcam-fonts.conf"
     
-    # Update font cache
+    # Actualizar caché de fuentes
     fc-cache -fv
     
-    log_success "Fontconfig installed and configured"
+    log_success "Fontconfig instalado y configurado"
 }
 
 set_permissions() {
-    log_info "Setting font permissions..."
+    log_info "Estableciendo permisos de fuentes..."
     
-    # Set proper ownership
+    # Establecer propiedad correcta
     chown -R "${ASZ_USER}:${ASZ_USER}" "${FONTS_DIR}"
     
-    # Set permissions for system fonts
+    # Establecer permisos para fuentes del sistema
     chmod 644 /etc/fonts/conf.d/99-aszcam-fonts.conf
     
-    log_success "Font permissions set"
+    log_success "Permisos de fuentes establecidos"
 }
 
 cleanup_temp_files() {
-    log_info "Cleaning up temporary files..."
+    log_info "Limpiando archivos temporales..."
     
     rm -rf "${TEMP_DIR}"
     
-    log_success "Temporary files cleaned up"
+    log_success "Archivos temporales limpiados"
 }
 
 show_font_summary() {
     echo ""
     echo "==============================================="
-    log_success "Font Installation Complete!"
+    log_success "¡Instalación de Fuentes Completada!"
     echo "==============================================="
     echo ""
-    echo "Installed:"
-    echo "- System fonts (Roboto, Inter, DejaVu, etc.)"
-    echo "- Custom font configuration"
-    echo "- Python font manager utility"
-    echo "- Fontconfig integration"
+    echo "Instalado:"
+    echo "- Fuentes del sistema (Roboto, Inter, DejaVu, etc.)"
+    echo "- Configuración de fuentes personalizada"
+    echo "- Utilidad de gestor de fuentes Python"
+    echo "- Integración Fontconfig"
     echo ""
-    echo "Font assets location: ${FONTS_DIR}"
-    echo "System font config: /etc/fonts/conf.d/99-aszcam-fonts.conf"
+    echo "Ubicación de assets de fuentes: ${FONTS_DIR}"
+    echo "Configuración de fuentes del sistema: /etc/fonts/conf.d/99-aszcam-fonts.conf"
     echo ""
-    echo "Available fonts can be tested with:"
+    echo "Las fuentes disponibles se pueden probar con:"
     echo "fc-list | grep -E '(Roboto|Inter|DejaVu)'"
     echo ""
 }
 
-# Main function
+# Función principal
 main() {
-    log_info "Starting font installation..."
+    log_info "Iniciando instalación de fuentes..."
     
     create_directories
     download_sf_camera_fonts
@@ -465,7 +465,7 @@ main() {
     show_font_summary
 }
 
-# Run main function if script is executed directly
+# Ejecutar función principal si el script se ejecuta directamente
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     main "$@"
 fi
