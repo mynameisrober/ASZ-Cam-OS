@@ -1,0 +1,31 @@
+[Unit]
+Description=ASZ Cam Update Service (OTA)
+Documentation=man:aszcam-update(8)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/aszcam/bin/update-service
+User=root
+Group=root
+
+# Security settings
+NoNewPrivileges=false
+ProtectSystem=false
+ReadWritePaths=/
+
+# Update capabilities
+AmbientCapabilities=CAP_SYS_ADMIN
+CapabilityBoundingSet=CAP_SYS_ADMIN
+
+[Install]
+WantedBy=multi-user.target
+
+# Timer for periodic updates
+[Timer]
+OnCalendar=daily
+Persistent=true
+
+[Install]
+WantedBy=timers.target
