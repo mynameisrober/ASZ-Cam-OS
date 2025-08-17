@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Optional
 
 from PyQt6.QtWidgets import QApplication
-from PyQt6.QtCore import QTimer, QObject, pyqtSignal
+from PyQt6.QtCore import QTimer, QObject, pyqtSignal, Qt
 from PyQt6.QtGui import QFont, QFontDatabase
 
 from ..config.settings import settings
@@ -134,8 +134,7 @@ class SystemManager(QObject):
             self._load_fonts()
             
             # Set application properties for kiosk mode
-            if settings.ui.fullscreen:
-                self.app.setAttribute(0x10000000)  # AA_DisableWindowContextHelpButton
+            # Future: Set Qt attributes as needed
             
             return True
             
@@ -293,7 +292,7 @@ class SystemManager(QObject):
     def _hide_cursor(self):
         """Hide the mouse cursor."""
         if self.main_window:
-            self.main_window.setCursor(0)  # Qt.BlankCursor
+            self.main_window.setCursor(Qt.CursorShape.BlankCursor)
     
     def shutdown(self):
         """Perform graceful shutdown of the system."""
