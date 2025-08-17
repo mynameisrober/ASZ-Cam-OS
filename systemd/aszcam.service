@@ -1,0 +1,28 @@
+[Unit]
+Description=ASZ Cam OS - Custom Camera Operating System
+After=graphical-session.target
+Wants=graphical-session.target
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+WorkingDirectory=/opt/aszcam
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/pi/.Xauthority
+Environment=XDG_RUNTIME_DIR=/run/user/1000
+ExecStart=/opt/aszcam/venv/bin/python /opt/aszcam/src/main.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=false
+ReadWritePaths=/home/pi/ASZCam /opt/aszcam /tmp
+
+[Install]
+WantedBy=graphical-session.target

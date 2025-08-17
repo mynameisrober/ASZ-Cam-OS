@@ -1,0 +1,32 @@
+# ASZ Cam OS - Boot Configuration for Raspberry Pi
+# Add these lines to /boot/config.txt
+
+# Camera configuration
+start_x=1
+gpu_mem=128
+disable_camera_led=0
+
+# Display configuration
+hdmi_force_hotplug=1
+hdmi_drive=2
+disable_splash=1
+
+# Boot optimization
+boot_delay=0
+disable_poe_fan=1
+
+# Audio (optional)
+dtparam=audio=on
+
+# GPU optimization
+gpu_freq=500
+over_voltage=2
+
+# Memory split
+gpu_mem_256=128
+gpu_mem_512=256
+gpu_mem_1024=256
+
+# Disable unnecessary services to save boot time
+dtoverlay=disable-wifi
+dtoverlay=disable-bt
