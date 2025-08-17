@@ -83,9 +83,17 @@ def setup_dev_environment(args):
     dev_photos_dir.mkdir(exist_ok=True)
     os.environ['ASZ_PHOTOS_PATH'] = str(dev_photos_dir)
     
+    dev_data_dir = project_root / 'dev_data'
+    dev_data_dir.mkdir(exist_ok=True)
+    os.environ['ASZ_DATA_PATH'] = str(dev_data_dir)
+    
     temp_dir = project_root / 'temp'
     temp_dir.mkdir(exist_ok=True)
     os.environ['ASZ_TEMP_PATH'] = str(temp_dir)
+    
+    dev_backup_dir = project_root / 'dev_backups'
+    dev_backup_dir.mkdir(exist_ok=True)
+    os.environ['ASZ_BACKUP_PATH'] = str(dev_backup_dir)
     
     # Assets path
     assets_dir = project_root / 'assets'

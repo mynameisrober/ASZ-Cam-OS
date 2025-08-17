@@ -356,6 +356,9 @@ class EnhancedSettings:
         self.performance = PerformanceConfig()
         self.system = SystemConfig()
         
+        # Override hardcoded paths for development mode
+        self._setup_development_paths()
+        
         # Runtime state
         self._config_watchers = []
         self._last_modified = 0
@@ -372,6 +375,35 @@ class EnhancedSettings:
         config_dir.mkdir(parents=True, exist_ok=True)
         return str(config_dir / "settings.yaml")
     
+    def _setup_development_paths(self):
+        """Override hardcoded paths when in development mode."""
+        # Check if we're in development mode
+        if os.environ.get('ASZ_DEV_MODE', '').lower() == 'true':
+            # Override system paths with environment variables
+            if 'ASZ_DATA_PATH' in os.environ:
+                self.system.data_directory = os.environ['ASZ_DATA_PATH']
+            else:
+                # Fallback to safe development path
+                self.system.data_directory = str(Path.cwd() / 'dev_data')
+            
+            if 'ASZ_PHOTOS_PATH' in os.environ:
+                self.system.photos_directory = os.environ['ASZ_PHOTOS_PATH']
+            else:
+                # Fallback to safe development path
+                self.system.photos_directory = str(Path.cwd() / 'dev_photos')
+            
+            if 'ASZ_TEMP_PATH' in os.environ:
+                self.system.temp_directory = os.environ['ASZ_TEMP_PATH']
+            else:
+                # Fallback to safe development path
+                self.system.temp_directory = str(Path.cwd() / 'temp')
+            
+            if 'ASZ_BACKUP_PATH' in os.environ:
+                self.system.backup_directory = os.environ['ASZ_BACKUP_PATH']
+            else:
+                # Fallback to safe development path
+                self.system.backup_directory = str(Path.cwd() / 'dev_backups')
+    
     def _ensure_directories(self):
         """Ensure all required directories exist."""
         directories = [
@@ -384,8 +416,8 @@ class EnhancedSettings:
         for directory in directories:
             try:
                 Path(directory).mkdir(parents=True, exist_ok=True)
-            except PermissionError:
-                # For development environments, use temp directory
+            except (PermissionError, OSError) as e:
+                # For development environments or permission issues, use temp directory
                 import tempfile
                 temp_base = tempfile.gettempdir()
                 rel_path = Path(directory).name
