@@ -1,0 +1,20 @@
+[Unit]
+Description=ASZ Cam OS - Camera Application
+After=graphical-session.target
+Wants=graphical-session.target
+
+[Service]
+Type=simple
+User=asz
+Group=asz
+Environment=DISPLAY=:0
+Environment=ASZ_FULLSCREEN=1
+Environment=QT_QPA_PLATFORM=linuxfb
+ExecStart=/opt/asz-cam-os/main.py
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=graphical-session.target
