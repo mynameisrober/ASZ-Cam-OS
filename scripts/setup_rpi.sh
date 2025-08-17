@@ -1,43 +1,43 @@
 #!/bin/bash
-# ASZ Cam OS - Raspberry Pi Setup Script
-# Configures Raspberry Pi specific settings for optimal camera performance
-# Author: ASZ Development Team
-# Version: 1.0.0
+# ASZ Cam OS - Script de Configuración Raspberry Pi
+# Configura ajustes específicos de Raspberry Pi para rendimiento óptimo de cámara
+# Autor: Equipo de Desarrollo ASZ
+# Versión: 1.0.0
 
 set -e
 
-# Colors for output
+# Colores para salida
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-# Configuration
+# Configuración
 ASZ_USER="${ASZ_USER:-pi}"
 ASZ_HOME="/home/${ASZ_USER}"
 ASZ_INSTALL_DIR="${ASZ_INSTALL_DIR:-${ASZ_HOME}/ASZCam}"
 
-# Helper functions
+# Funciones auxiliares
 log_info() {
-    echo -e "${BLUE}[RPi Setup]${NC} $1"
+    echo -e "${BLUE}[Config RPi]${NC} $1"
 }
 
 log_success() {
-    echo -e "${GREEN}[RPi Setup]${NC} $1"
+    echo -e "${GREEN}[Config RPi]${NC} $1"
 }
 
 log_warning() {
-    echo -e "${YELLOW}[RPi Setup]${NC} $1"
+    echo -e "${YELLOW}[Config RPi]${NC} $1"
 }
 
 log_error() {
-    echo -e "${RED}[RPi Setup]${NC} $1"
+    echo -e "${RED}[Config RPi]${NC} $1"
 }
 
 check_raspberry_pi() {
     if ! grep -q "Raspberry Pi" /proc/cpuinfo; then
-        log_error "This script is only for Raspberry Pi systems"
+        log_error "Este script es solo para sistemas Raspberry Pi"
         exit 1
     fi
     
@@ -319,40 +319,40 @@ backup_original_config() {
     # Create backup directory
     mkdir -p /boot/aszcam-backups
     
-    # Backup important files
+    # Respaldar archivos importantes
     cp /boot/config.txt /boot/aszcam-backups/config.txt.backup.$(date +%Y%m%d)
     cp /boot/cmdline.txt /boot/aszcam-backups/cmdline.txt.backup.$(date +%Y%m%d)
     
-    log_success "Configuration backups created"
+    log_success "Respaldos de configuración creados"
 }
 
 show_rpi_summary() {
     echo ""
     echo "==============================================="
-    log_success "Raspberry Pi Setup Complete!"
+    log_success "¡Configuración de Raspberry Pi Completada!"
     echo "==============================================="
     echo ""
-    echo "Configured:"
-    echo "- Camera module enabled"
-    echo "- GPU memory optimized (128MB)"
-    echo "- Boot time optimized"
-    echo "- Display settings configured"
-    echo "- Audio enabled"
-    echo "- I2C/SPI interfaces enabled"
-    echo "- Performance governor set"
-    echo "- Network settings optimized"
-    echo "- Filesystem optimized"
-    echo "- User groups configured"
+    echo "Configurado:"
+    echo "- Módulo de cámara habilitado"
+    echo "- Memoria GPU optimizada (128MB)"
+    echo "- Tiempo de arranque optimizado"
+    echo "- Configuraciones de pantalla configuradas"
+    echo "- Audio habilitado"
+    echo "- Interfaces I2C/SPI habilitadas"
+    echo "- Gobernador de rendimiento establecido"
+    echo "- Configuraciones de red optimizadas"
+    echo "- Sistema de archivos optimizado"
+    echo "- Grupos de usuario configurados"
     echo ""
-    echo "Backups saved to: /boot/aszcam-backups/"
+    echo "Respaldos guardados en: /boot/aszcam-backups/"
     echo ""
-    log_warning "A reboot is required for all changes to take effect"
+    log_warning "Se requiere un reinicio para que todos los cambios tomen efecto"
     echo ""
 }
 
-# Main function
+# Función principal
 main() {
-    log_info "Starting Raspberry Pi specific setup..."
+    log_info "Iniciando configuración específica de Raspberry Pi..."
     
     check_raspberry_pi
     backup_original_config
