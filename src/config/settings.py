@@ -382,7 +382,25 @@ class EnhancedSettings:
         ]
         
         for directory in directories:
-            Path(directory).mkdir(parents=True, exist_ok=True)
+            try:
+                Path(directory).mkdir(parents=True, exist_ok=True)
+            except PermissionError:
+                # For development environments, use temp directory
+                import tempfile
+                temp_base = tempfile.gettempdir()
+                rel_path = Path(directory).name
+                temp_dir = Path(temp_base) / "aszcam" / rel_path
+                temp_dir.mkdir(parents=True, exist_ok=True)
+                
+                # Update the directory path
+                if directory == self.system.data_directory:
+                    self.system.data_directory = str(temp_dir.parent / "ASZCam")
+                elif directory == self.system.photos_directory:
+                    self.system.photos_directory = str(temp_dir.parent / "Photos")
+                elif directory == self.system.temp_directory:
+                    self.system.temp_directory = str(temp_dir.parent / "temp")
+                elif directory == self.system.backup_directory:
+                    self.system.backup_directory = str(temp_dir.parent / "backups")
     
     def _detect_hardware_capabilities(self):
         """Detect hardware capabilities and update settings accordingly."""
@@ -638,5 +656,5 @@ class EnhancedSettings:
 # Create enhanced settings instance (backward compatible)
 settings = EnhancedSettings()
 
-# Maintain backward compatibility
+# Maintain backward compatibility  
 Settings = EnhancedSettings
