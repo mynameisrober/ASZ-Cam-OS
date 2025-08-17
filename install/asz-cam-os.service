@@ -1,0 +1,61 @@
+[Unit]
+Description=ASZ Cam OS - Camera Operating System
+Documentation=https://github.com/mynameisrober/ASZ-Cam-OS
+After=multi-user.target graphical-session.target sound.target network-online.target
+Wants=network-online.target
+Requires=graphical-session.target
+
+[Service]
+Type=simple
+User={ASZ_USER}
+Group={ASZ_USER}
+WorkingDirectory={ASZ_INSTALL_DIR}
+ExecStart={ASZ_INSTALL_DIR}/venv/bin/python {ASZ_INSTALL_DIR}/src/main.py
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=3
+
+# Environment variables
+Environment="DISPLAY=:0"
+Environment="HOME=/home/{ASZ_USER}"
+Environment="XDG_RUNTIME_DIR=/run/user/1000"
+Environment="PULSE_RUNTIME_PATH=/run/user/1000/pulse"
+
+# Resource limits
+MemoryMax=512M
+CPUQuota=80%
+
+# Security settings
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectHome=no
+ProtectSystem=strict
+ReadWritePaths={ASZ_INSTALL_DIR}
+ReadWritePaths=/home/{ASZ_USER}/.config/aszcam
+ReadWritePaths=/home/{ASZ_USER}/Pictures/ASZCam
+ReadWritePaths=/var/log/aszcam
+ReadWritePaths=/tmp
+
+# Device access for camera
+DeviceAllow=/dev/video* rw
+DeviceAllow=/dev/fb0 rw
+DeviceAllow=/dev/dri/* rw
+DeviceAllow=char-drm rw
+
+# Capabilities needed for camera access
+CapabilityBoundingSet=CAP_SYS_ADMIN CAP_DAC_OVERRIDE
+AmbientCapabilities=CAP_SYS_ADMIN CAP_DAC_OVERRIDE
+
+# Process management
+KillMode=mixed
+KillSignal=SIGTERM
+TimeoutStopSec=30
+
+# Logging configuration
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=aszcam
+
+[Install]
+WantedBy=graphical.target
+Also=aszcam-sync.service
