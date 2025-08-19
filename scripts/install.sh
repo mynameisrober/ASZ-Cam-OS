@@ -42,6 +42,34 @@ log_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
+# Function to check if a package is available in repositories
+check_package_available() {
+    local package_name="$1"
+    apt-cache show "$package_name" &>/dev/null
+    return $?
+}
+
+# Function to try installing packages with fallback options
+install_packages_with_fallback() {
+    local packages=("$@")
+    local failed_packages=()
+    
+    for package in "${packages[@]}"; do
+        if check_package_available "$package"; then
+            log_info "Installing $package..."
+            if ! apt-get install -y "$package"; then
+                log_warning "Failed to install $package, but continuing..."
+                failed_packages+=("$package")
+            fi
+        else
+            log_warning "Package $package not available in repositories"
+            failed_packages+=("$package")
+        fi
+    done
+    
+    return 0
+}
+
 check_root() {
     if [[ $EUID -ne 0 ]]; then
         log_error "Este script debe ejecutarse como root (usa sudo)"
@@ -89,61 +117,120 @@ update_system() {
 install_dependencies() {
     log_info "Instalando dependencias del sistema..."
     
-    # Paquetes esenciales
-    apt-get install -y \
-        python3 \
-        python3-pip \
-        python3-venv \
-        python3-dev \
-        git \
-        curl \
-        wget \
-        unzip \
-        build-essential \
-        cmake \
-        pkg-config \
-        libjpeg-dev \
-        libpng-dev \
-        libtiff-dev \
-        libavcodec-dev \
-        libavformat-dev \
-        libswscale-dev \
-        libv4l-dev \
-        libxvidcore-dev \
-        libx264-dev \
-        libgtk-3-dev \
-        libcanberra-gtk3-module \
-        libatlas-base-dev \
-        gfortran \
-        libhdf5-dev \
-        libhdf5-serial-dev \
-        libhdf5-103 \
-        python3-pyqt6 \
-        python3-pyqt6.qtcore \
-        python3-pyqt6.qtgui \
-        python3-pyqt6.qtwidgets \
-        qtbase6-dev \
-        qt6-wayland \
-        xorg \
-        xinit \
-        openbox \
-        unclutter \
-        chromium-browser \
-        fonts-dejavu \
+    # Critical system packages that must succeed
+    local critical_packages=(
+        python3
+        python3-pip
+        python3-venv
+        python3-dev
+        git
+        curl
+        wget
+        unzip
+        build-essential
+        cmake
+        pkg-config
+    )
+    
+    log_info "Installing critical system packages..."
+    apt-get install -y "${critical_packages[@]}"
+    
+    # Development libraries (continue even if some fail)
+    local dev_packages=(
+        libjpeg-dev
+        libpng-dev
+        libtiff-dev
+        libavcodec-dev
+        libavformat-dev
+        libswscale-dev
+        libv4l-dev
+        libxvidcore-dev
+        libx264-dev
+        libgtk-3-dev
+        libcanberra-gtk3-module
+        libatlas-base-dev
+        gfortran
+        libhdf5-dev
+        libhdf5-serial-dev
+        libhdf5-103
+    )
+    
+    log_info "Installing development libraries..."
+    install_packages_with_fallback "${dev_packages[@]}"
+    
+    # PyQt6 packages with fallback handling
+    local pyqt6_packages=(
+        python3-pyqt6
+        python3-pyqt6.qtcore
+        python3-pyqt6.qtgui
+        python3-pyqt6.qtwidgets
+        qtbase6-dev
+    )
+    
+    # Try alternative PyQt6 package names first
+    local pyqt6_alt_packages=(
+        python3-pyqt6
+        python3-pyqt6-dev
+        qt6-base-dev
+        qt6-wayland
+    )
+    
+    log_info "Installing PyQt6 packages..."
+    local pyqt6_installed=false
+    
+    # Try standard PyQt6 packages
+    for package in "${pyqt6_packages[@]}"; do
+        if check_package_available "$package" && apt-get install -y "$package" 2>/dev/null; then
+            log_success "Installed PyQt6 package: $package"
+            pyqt6_installed=true
+        else
+            log_warning "PyQt6 package not available: $package"
+        fi
+    done
+    
+    # Try alternative package names if standard ones failed
+    if [ "$pyqt6_installed" = false ]; then
+        log_info "Trying alternative PyQt6 package names..."
+        for package in "${pyqt6_alt_packages[@]}"; do
+            if check_package_available "$package" && apt-get install -y "$package" 2>/dev/null; then
+                log_success "Installed alternative package: $package"
+                pyqt6_installed=true
+            fi
+        done
+    fi
+    
+    if [ "$pyqt6_installed" = false ]; then
+        log_warning "System PyQt6 packages not available, will install via pip in virtual environment"
+    fi
+    
+    # GUI and system packages (optional)
+    local gui_packages=(
+        xorg
+        xinit
+        openbox
+        unclutter
+        chromium-browser
+        fonts-dejavu
         fonts-liberation
+    )
+    
+    log_info "Installing GUI and system packages..."
+    install_packages_with_fallback "${gui_packages[@]}"
     
     # Raspberry Pi specific packages
     if grep -q "Raspberry Pi" /proc/cpuinfo; then
         log_info "Installing Raspberry Pi specific packages..."
-        apt-get install -y \
-            raspberrypi-kernel-headers \
-            libcamera-dev \
-            libcamera-apps \
-            python3-libcamera \
+        local rpi_packages=(
+            raspberrypi-kernel-headers
+            libcamera-dev
+            libcamera-apps
+            python3-libcamera
             python3-picamera2
+        )
+        install_packages_with_fallback "${rpi_packages[@]}"
     fi
     
-    log_success "Dependencies installed successfully"
+    log_success "Dependencies installation completed"
 }
 
 create_user_and_directories() {
@@ -207,10 +294,75 @@ copy_source_code() {
 install_python_packages() {
     log_info "Installing Python packages..."
     
-    # Install packages in virtual environment
-    sudo -u "${ASZ_USER}" "${ASZ_INSTALL_DIR}/venv/bin/pip" install -r "${ASZ_INSTALL_DIR}/requirements.txt"
+    # Upgrade pip first
+    sudo -u "${ASZ_USER}" "${ASZ_INSTALL_DIR}/venv/bin/pip" install --upgrade pip
     
-    log_success "Python packages installed successfully"
+    # Check if PyQt6 is available from system packages
+    local pyqt6_system_available=false
+    if python3 -c "import PyQt6" 2>/dev/null; then
+        pyqt6_system_available=true
+        log_info "PyQt6 available from system packages"
+    fi
+    
+    # Install packages in virtual environment
+    if sudo -u "${ASZ_USER}" "${ASZ_INSTALL_DIR}/venv/bin/pip" install -r "${ASZ_INSTALL_DIR}/requirements.txt"; then
+        log_success "Python packages installed successfully"
+    else
+        log_warning "Some Python packages failed to install, trying individual installation..."
+        
+        # Try to install PyQt6 specifically if it failed
+        if ! sudo -u "${ASZ_USER}" "${ASZ_INSTALL_DIR}/venv/bin/python" -c "import PyQt6" 2>/dev/null; then
+            log_info "Installing PyQt6 via pip as fallback..."
+            
+            # Try different PyQt6 installation methods
+            if ! sudo -u "${ASZ_USER}" "${ASZ_INSTALL_DIR}/venv/bin/pip" install PyQt6>=6.5.0; then
+                log_warning "PyQt6 6.5+ failed, trying PyQt6 without version constraint..."
+                if ! sudo -u "${ASZ_USER}" "${ASZ_INSTALL_DIR}/venv/bin/pip" install PyQt6; then
+                    log_warning "PyQt6 installation failed, trying PyQt6-Qt6..."
+                    sudo -u "${ASZ_USER}" "${ASZ_INSTALL_DIR}/venv/bin/pip" install PyQt6-Qt6 || log_warning "PyQt6-Qt6 also failed"
+                fi
+            fi
+        fi
+        
+        # Try to install other critical packages individually
+        local critical_packages=(
+            "opencv-python>=4.8.0"
+            "Pillow>=10.0.0"
+            "numpy>=1.24.0"
+            "PyYAML>=6.0"
+        )
+        
+        for package in "${critical_packages[@]}"; do
+            if ! sudo -u "${ASZ_USER}" "${ASZ_INSTALL_DIR}/venv/bin/pip" install "$package"; then
+                log_warning "Failed to install $package, but continuing..."
+            fi
+        done
+        
+        log_success "Python packages installation completed with some warnings"
+    fi
+    
+    # Verify critical packages are available
+    log_info "Verifying critical Python packages..."
+    local python_bin="${ASZ_INSTALL_DIR}/venv/bin/python"
+    
+    # Check PyQt6
+    if sudo -u "${ASZ_USER}" "$python_bin" -c "import PyQt6; print('PyQt6 version:', PyQt6.QtCore.QT_VERSION_STR)" 2>/dev/null; then
+        log_success "PyQt6 is available and working"
+    else
+        log_warning "PyQt6 verification failed - GUI functionality may be limited"
+    fi
+    
+    # Check other critical modules
+    local modules_to_check=("cv2:OpenCV" "PIL:Pillow" "numpy:NumPy" "yaml:PyYAML")
+    for module_check in "${modules_to_check[@]}"; do
+        module_name="${module_check%%:*}"
+        friendly_name="${module_check##*:}"
+        if sudo -u "${ASZ_USER}" "$python_bin" -c "import $module_name" 2>/dev/null; then
+            log_success "$friendly_name is available"
+        else
+            log_warning "$friendly_name verification failed"
+        fi
+    done
 }
 
 run_raspberry_pi_setup() {

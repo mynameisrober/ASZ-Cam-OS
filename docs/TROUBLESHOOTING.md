@@ -111,6 +111,32 @@ sudo ./scripts/install.sh
 
 #### Problem: Package installation failures
 ```
+E: Unable to locate package python3-pyqt6.qtcore
+E: Couldn't find any package by glob 'python3-pyqt6.qtcore'
+```
+
+**Solutions:**
+1. **Automatic handling (v1.0.1+)**: The installation script now automatically detects 
+   when specific PyQt6 packages are unavailable and uses fallback installation via pip.
+
+2. Manual verification of available packages:
+   ```bash
+   apt-cache search python3-pyqt6
+   apt-cache search qt6
+   ```
+
+3. Check system compatibility:
+   ```bash
+   lsb_release -a
+   cat /etc/debian_version
+   ```
+
+4. Force pip installation:
+   ```bash
+   cd /home/pi/ASZCam
+   ./venv/bin/pip install PyQt6
+   ```
+```
 E: Unable to locate package python3-libcamera
 ```
 
@@ -189,15 +215,25 @@ ERROR: Could not find a version that satisfies the requirement PyQt6>=6.5.0
    pip install --upgrade pip
    ```
 
-2. Install system PyQt6:
+2. Install system PyQt6 (the installation script now handles this automatically):
    ```bash
-   sudo apt install python3-pyqt6 python3-pyqt6.qtcore python3-pyqt6.qtgui
+   sudo apt install python3-pyqt6
    ```
+   Note: On some systems like Raspberry Pi OS Bookworm, specific PyQt6 subpackages 
+   (`python3-pyqt6.qtcore`, `python3-pyqt6.qtgui`, etc.) may not be available.
+   The installation script will automatically detect this and install PyQt6 via pip instead.
 
 3. Use alternative installation:
    ```bash
    pip install PyQt6 --no-cache-dir
    ```
+
+4. **New in v1.0.1**: Automatic fallback handling
+   The installation script now automatically:
+   - Checks package availability before attempting installation
+   - Uses alternative package names when available (e.g., `qt6-base-dev` instead of `qtbase6-dev`)
+   - Falls back to pip installation in virtual environment if system packages are unavailable
+   - Continues installation even if optional PyQt6 system packages fail
 
 #### Problem: Google API client installation fails
 ```
