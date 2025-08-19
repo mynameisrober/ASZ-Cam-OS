@@ -419,6 +419,47 @@ rm -rf ~/Pictures/ASZCam/
 sudo systemctl start asz-cam-os
 ```
 
+### Recuperación de Instalación Interrumpida
+
+Si la instalación de ASZ Cam OS se interrumpe (por ejemplo, debido a un corte de energía o interrupción de red), puedes usar el script de finalización para detectar y completar los pasos faltantes:
+
+#### Script de Finalización de Instalación
+```bash
+# Verificar qué pasos faltan (modo de prueba)
+sudo ./scripts/complete_install.sh --dry-run
+
+# Completar instalación interrumpida
+sudo ./scripts/complete_install.sh
+
+# Completar sin confirmaciones (para automatización)
+sudo ./scripts/complete_install.sh --force
+```
+
+#### Escenarios Comunes de Recuperación
+
+**Instalación interrumpida después de dependencias del sistema:**
+```bash
+# El script detectará automáticamente los pasos faltantes
+sudo ./scripts/complete_install.sh
+```
+
+**Entorno virtual Python faltante o corrupto:**
+```bash
+# Eliminar entorno virtual existente si está corrupto
+sudo rm -rf /home/pi/ASZCam/venv
+
+# Ejecutar script de finalización
+sudo ./scripts/complete_install.sh
+```
+
+**Paquetes Python no instalados correctamente:**
+```bash
+# El script verificará y reinstalará paquetes faltantes
+sudo ./scripts/complete_install.sh --force
+```
+
+Para más detalles sobre el script de finalización, consulta [COMPLETION_SCRIPT.md](COMPLETION_SCRIPT.md).
+
 ### Obtener Ayuda
 
 Si encuentras problemas no cubiertos aquí:
