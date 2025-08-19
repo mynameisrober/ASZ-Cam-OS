@@ -437,8 +437,10 @@ class EnhancedSettings:
     def _detect_hardware_capabilities(self):
         """Detect hardware capabilities and update settings accordingly."""
         try:
+            is_pi = self._is_raspberry_pi()
+            
             # Detect Raspberry Pi model and adjust performance settings
-            if self._is_raspberry_pi():
+            if is_pi:
                 with open('/proc/device-tree/model', 'r') as f:
                     model = f.read().strip('\x00')
                     
@@ -452,6 +454,23 @@ class EnhancedSettings:
                         self.performance.thread_pool_size = 2
                         self.performance.max_concurrent_operations = 4
                         self.performance.gpu_memory_mb = 64
+                        
+                # Pi defaults: fullscreen kiosk mode
+                self.ui.fullscreen = True
+                self.ui.auto_hide_cursor = True
+                self.ui.touch_mode = True
+            else:
+                # Development/desktop environment defaults
+                self.ui.fullscreen = False  # Windowed for development
+                self.ui.auto_hide_cursor = False
+                self.ui.touch_mode = False
+                self.ui.window_width = 1024
+                self.ui.window_height = 768
+                
+                # Better performance settings for development
+                self.performance.thread_pool_size = 2
+                self.performance.max_concurrent_operations = 4
+                self.performance.gpu_memory_mb = 128
             
             # Detect available camera resolutions (would be done by camera service)
             # This is a placeholder - actual detection happens at runtime
