@@ -70,8 +70,13 @@ done
 
 # Logging
 LOG_FILE="/tmp/aszcam_complete_install.log"
-exec 1> >(tee -a ${LOG_FILE})
-exec 2> >(tee -a ${LOG_FILE} >&2)
+if [[ "$EUID" -eq 0 ]] && [[ "$DRY_RUN" != "true" ]]; then
+    exec 1> >(tee -a ${LOG_FILE})
+    exec 2> >(tee -a ${LOG_FILE} >&2)
+else
+    # If not root or in dry-run mode, don't use complex logging
+    LOG_FILE="/dev/null"
+fi
 
 # Get script directory for sourcing functions
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
@@ -232,10 +237,33 @@ install_dependencies() {
 create_user_and_directories() {
     log_info "Creating user and directories..."
     
+    if [[ "$DRY_RUN" == "true" ]]; then
+        log_dry_run "Would create user ${ASZ_USER} if not exists"
+        log_dry_run "Would create directories: ${ASZ_INSTALL_DIR}, ${ASZ_HOME}/.config/aszcam, etc."
+        log_dry_run "Would set appropriate permissions"
+        return 0
+    fi
+    
     # Create user if doesn't exist
     if ! id "${ASZ_USER}" &>/dev/null; then
         useradd -m -s /bin/bash "${ASZ_USER}"
-        usermod -a -G video,gpio,i2c,spi "${ASZ_USER}"
+        
+        # Add user to groups that exist
+        local groups_to_add=()
+        for group in video gpio i2c spi; do
+            if getent group "$group" >/dev/null 2>&1; then
+                groups_to_add+=("$group")
+            else
+                log_warning "Group $group does not exist on this system"
+            fi
+        done
+        
+        if [[ ${#groups_to_add[@]} -gt 0 ]]; then
+            local groups_str=$(IFS=,; echo "${groups_to_add[*]}")
+            usermod -a -G "$groups_str" "${ASZ_USER}"
+            log_info "Added user ${ASZ_USER} to groups: $groups_str"
+        fi
+        
         log_info "Created user: ${ASZ_USER}"
     else
         log_info "User ${ASZ_USER} already exists"
@@ -259,6 +287,12 @@ create_user_and_directories() {
 install_python_environment() {
     log_info "Setting up Python virtual environment..."
     
+    if [[ "$DRY_RUN" == "true" ]]; then
+        log_dry_run "Would create virtual environment at ${ASZ_INSTALL_DIR}/venv"
+        log_dry_run "Would upgrade pip in virtual environment"
+        return 0
+    fi
+    
     # Create virtual environment as the target user
     sudo -u "${ASZ_USER}" python3 -m venv "${ASZ_INSTALL_DIR}/venv"
     
@@ -273,6 +307,14 @@ copy_source_code() {
     
     # Get the project root directory
     PROJECT_ROOT="$(dirname "${SCRIPT_DIR}")"
+    
+    if [[ "$DRY_RUN" == "true" ]]; then
+        log_dry_run "Would copy source files from ${PROJECT_ROOT}/src to ${ASZ_INSTALL_DIR}/"
+        log_dry_run "Would copy assets from ${PROJECT_ROOT}/assets to ${ASZ_INSTALL_DIR}/"
+        log_dry_run "Would copy requirements.txt"
+        log_dry_run "Would set appropriate permissions"
+        return 0
+    fi
     
     # Copy source files
     cp -r "${PROJECT_ROOT}/src" "${ASZ_INSTALL_DIR}/" 2>/dev/null || log_warning "Source directory not found"
@@ -383,6 +425,13 @@ install_systemd_service() {
     log_info "Installing systemd service..."
     
     PROJECT_ROOT="$(dirname "${SCRIPT_DIR}")"
+    
+    if [[ "$DRY_RUN" == "true" ]]; then
+        log_dry_run "Would copy service file from ${PROJECT_ROOT}/install/asz-cam-os.service"
+        log_dry_run "Would update service file with paths"
+        log_dry_run "Would enable asz-cam-os.service"
+        return 0
+    fi
     
     # Install service file
     if [[ -f "${PROJECT_ROOT}/install/asz-cam-os.service" ]]; then
