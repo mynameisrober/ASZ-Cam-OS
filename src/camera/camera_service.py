@@ -62,23 +62,50 @@ class CameraService(QObject):
             
             if not self.backend.initialize():
                 self.error_occurred.emit("Failed to initialize camera backend")
-                return False
+                # Don't return False - allow service to continue but mark as unavailable
+                self.camera_status_changed.emit(False)
+            else:
+                self.camera_status_changed.emit(self.backend.is_camera_available())
             
             # Set up preview timer
-            if settings.camera.preview_enabled:
+            if settings.camera.preview_enabled and self.backend and self.backend.is_camera_available():
                 self.preview_timer = QTimer()
                 self.preview_timer.timeout.connect(self._update_preview)
                 
             self.is_initialized = True
-            self.camera_status_changed.emit(True)
-            self.logger.info("Camera service initialized successfully")
+            if self.backend and self.backend.is_camera_available():
+                self.camera_status_changed.emit(True)
+                self.logger.info("Camera service initialized successfully")
+            else:
+                self.camera_status_changed.emit(False)
+                self.logger.info("Camera service initialized without camera hardware")
             return True
             
         except Exception as e:
             self.logger.error(f"Camera service initialization failed: {e}")
             self.error_occurred.emit(f"Camera initialization failed: {str(e)}")
-            return False
+            # Still return True to allow system to continue
+            self.is_initialized = True
+            self.camera_status_changed.emit(False)
+            return True
     
+    def is_camera_available(self) -> bool:
+        """Check if camera hardware is available."""
+        return (self.is_initialized and self.backend and 
+                hasattr(self.backend, 'is_camera_available') and 
+                self.backend.is_camera_available())
+    
+    def get_camera_status(self) -> str:
+        """Get human-readable camera status."""
+        if not self.is_initialized:
+            return "Camera service not initialized"
+        elif not self.backend:
+            return "Camera backend not available"
+        elif hasattr(self.backend, 'get_camera_status'):
+            return self.backend.get_camera_status()
+        else:
+            return "Camera status unknown"
+
     def start_preview(self) -> bool:
         """Start camera preview."""
         if not self.is_initialized or not self.backend:

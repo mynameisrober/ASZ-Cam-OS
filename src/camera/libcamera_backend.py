@@ -50,17 +50,39 @@ class LibCameraBackend:
                 if self.opencv_camera.isOpened():
                     self.camera_available = True
                 else:
-                    self.logger.error("No camera found (OpenCV fallback)")
-                    return False
+                    self.logger.warning("No camera found (OpenCV fallback) - camera features will be unavailable")
+                    self.camera_available = False
+                    # Don't return False - allow system to continue without camera
             
             self.is_initialized = True
-            self.logger.info("Camera backend initialized successfully")
+            if self.camera_available:
+                self.logger.info("Camera backend initialized successfully")
+            else:
+                self.logger.info("Camera backend initialized without camera hardware")
             return True
             
         except Exception as e:
             self.logger.error(f"Camera backend initialization failed: {e}")
-            return False
+            # Still allow initialization to succeed, just mark camera as unavailable
+            self.is_initialized = True
+            self.camera_available = False
+            return True
     
+    def is_camera_available(self) -> bool:
+        """Check if camera hardware is available."""
+        return self.is_initialized and self.camera_available
+    
+    def get_camera_status(self) -> str:
+        """Get human-readable camera status."""
+        if not self.is_initialized:
+            return "Not initialized"
+        elif not self.camera_available:
+            return "Camera not available"
+        elif self.use_opencv_fallback:
+            return "Using development camera"
+        else:
+            return "Camera ready"
+
     def _is_raspberry_pi(self) -> bool:
         """Check if running on Raspberry Pi."""
         try:
@@ -81,7 +103,8 @@ class LibCameraBackend:
     
     def start_preview(self) -> bool:
         """Start camera preview."""
-        if not self.is_initialized:
+        if not self.is_initialized or not self.camera_available:
+            self.logger.warning("Cannot start preview: camera not available")
             return False
         
         try:
@@ -196,7 +219,8 @@ class LibCameraBackend:
     def capture_photo(self, resolution: Tuple[int, int] = None, 
                      quality: int = 95) -> Optional[np.ndarray]:
         """Capture a high-quality photo."""
-        if not self.is_initialized:
+        if not self.is_initialized or not self.camera_available:
+            self.logger.warning("Cannot capture photo: camera not available")
             return None
         
         try:
