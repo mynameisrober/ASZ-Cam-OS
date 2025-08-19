@@ -83,6 +83,26 @@ sudo reboot
 
 **¡Eso es todo!** ASZ Cam OS se iniciará automáticamente después del reinicio.
 
+### **Modos de Cámara Opcionales** 🎯
+
+Para pruebas, desarrollo, o demostraciones, ASZ Cam OS puede ejecutarse sin necesidad de una cámara física:
+
+```bash
+# Ejecutar sin cámara (para pruebas de interfaz)
+python src/main.py --no-camera
+
+# Modo demostración con cámara simulada
+python src/main.py --demo
+
+# Modo desarrollo con cámara ficticia
+python src/main.py --mock-camera
+```
+
+**Casos de Uso:**
+- **`--no-camera`**: Perfecto para probar la interfaz de usuario sin hardware
+- **`--demo`**: Ideal para demostraciones con datos de muestra
+- **`--mock-camera`**: Excelente para desarrollo y contribuciones
+
 ## 📖 Documentación
 
 ### **Documentación del Usuario**

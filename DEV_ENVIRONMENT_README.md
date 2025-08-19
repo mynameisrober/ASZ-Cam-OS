@@ -22,7 +22,22 @@ python scripts/run_dev_mode.py --test-env-only
 
 # Run development mode
 python scripts/run_dev_mode.py
+
+# Or use the new built-in camera modes (recommended)
+python src/main.py --demo              # Demo mode with mock camera
+python src/main.py --mock-camera       # Development mode with mock camera  
+python src/main.py --no-camera         # Run without camera for UI testing
 ```
+
+### 🎯 New Camera Mode Options
+
+ASZ Cam OS now includes built-in camera mode options for development and testing:
+
+- **`--demo`**: Full demo mode with mock camera and sample data
+- **`--mock-camera`**: Development mode with simulated camera
+- **`--no-camera`**: UI-only mode for interface testing without camera
+
+These modes are now the preferred way to run ASZ Cam OS in development environments.
 
 ## 🎯 What's Included
 
