@@ -183,8 +183,14 @@ class MainWindow(QMainWindow):
             if self.camera_service.is_initialized:
                 self.camera_service.start_preview()
                 self.camera_status_label.setText("Camera: Active")
+            else:
+                self.camera_status_label.setText("Camera: Initialization failed")
+                self.capture_button.setEnabled(False)
         else:
-            self.camera_status_label.setText("Camera: Not available")
+            self.camera_status_label.setText("Camera: Not available (No-camera mode)")
+            self.capture_button.setEnabled(False)
+            self.capture_button.setText("Camera Required")
+            self.preview_label.setText("Camera Preview\n\nRunning in no-camera mode\nCamera service not available")
 
         if self.sync_service:
             # Connect sync service signals if needed

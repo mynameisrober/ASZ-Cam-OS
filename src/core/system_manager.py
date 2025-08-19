@@ -34,6 +34,11 @@ class SystemManager(QObject):
         self.camera_service = None
         self.sync_service = None
         self.shutdown_in_progress = False
+        self.camera_config = {
+            'required': True,
+            'use_mock': False,
+            'demo_mode': False
+        }
         self._setup_logging()
         self._setup_signal_handlers()
         
@@ -84,9 +89,13 @@ class SystemManager(QObject):
         """Check if running in development environment."""
         return not Path("/opt/aszcam").exists()
     
-    def initialize(self) -> bool:
+    def initialize(self, camera_config: Optional[dict] = None) -> bool:
         """Initialize the system and all components."""
         try:
+            # Update camera configuration if provided
+            if camera_config:
+                self.camera_config.update(camera_config)
+                
             self.logger.info("Initializing ASZ Cam OS...")
             
             # Initialize Qt Application
@@ -99,8 +108,11 @@ class SystemManager(QObject):
             
             # Initialize camera service
             if not self._initialize_camera():
-                self.logger.error("Failed to initialize camera service")
-                return False
+                if self.camera_config['required']:
+                    self.logger.error("Failed to initialize camera service")
+                    return False
+                else:
+                    self.logger.warning("Camera service not available, continuing without camera")
             
             # Initialize sync service
             if not self._initialize_sync():
@@ -194,6 +206,14 @@ class SystemManager(QObject):
         """Initialize camera service."""
         try:
             from ..camera.camera_service import CameraService
+            
+            # Set environment variables based on camera config
+            if self.camera_config['use_mock']:
+                import os
+                os.environ['ASZ_MOCK_CAMERA'] = 'true'
+                if self.camera_config['demo_mode']:
+                    os.environ['ASZ_DEMO_MODE'] = 'true'
+            
             self.camera_service = CameraService()
             self.camera_service.error_occurred.connect(self.camera_error)
             
@@ -201,14 +221,20 @@ class SystemManager(QObject):
                 self.logger.info("Camera service initialized successfully")
                 return True
             else:
-                self.logger.error("Camera service initialization failed")
+                if self.camera_config['required']:
+                    self.logger.error("Camera service initialization failed")
+                else:
+                    self.logger.warning("Camera service initialization failed, but camera is not required")
                 return False
                 
         except ImportError as e:
             self.logger.error(f"Could not import camera service: {e}")
             return False
         except Exception as e:
-            self.logger.error(f"Camera initialization failed: {e}")
+            if self.camera_config['required']:
+                self.logger.error(f"Camera initialization failed: {e}")
+            else:
+                self.logger.warning(f"Camera initialization failed: {e}")
             return False
     
     def _initialize_sync(self) -> bool:
