@@ -16,7 +16,7 @@ from PyQt6.QtWidgets import (
     QSizePolicy,
 )
 from PyQt6.QtCore import Qt, pyqtSlot
-from PyQt6.QtGui import QPixmap, QImage, QFont
+from PyQt6.QtGui import QPixmap, QImage, QFont, QFontDatabase
 import numpy as np
 import cv2
 
@@ -56,6 +56,9 @@ class MainWindow(QMainWindow):
         if not settings.ui.fullscreen:
             self.resize(1024, 768)
 
+        # Load custom fonts
+        self._load_custom_fonts()
+
         # Create central widget and layout
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -73,6 +76,31 @@ class MainWindow(QMainWindow):
 
         # Status bar
         self.statusBar().showMessage("ASZ Cam OS - Ready")
+    
+    def _load_custom_fonts(self):
+        """Load SF-Camera fonts."""
+        try:
+            from pathlib import Path
+            fonts_dir = Path(__file__).parent.parent.parent / "assets" / "fonts" / "SFCamera"
+            
+            font_files = [
+                "SFCamera-Regular.otf",
+                "SFCamera-Medium.otf", 
+                "SFCamera-Semibold.otf",
+                "SFCamera-Bold.otf"
+            ]
+            
+            for font_file in font_files:
+                font_path = fonts_dir / font_file
+                if font_path.exists():
+                    font_id = QFontDatabase.addApplicationFont(str(font_path))
+                    if font_id != -1:
+                        self.logger.debug(f"Loaded font: {font_file}")
+                    else:
+                        self.logger.warning(f"Failed to load font: {font_file}")
+                        
+        except Exception as e:
+            self.logger.warning(f"Could not load custom fonts: {e}")
 
     def _setup_preview_area(self, parent_layout):
         """Set up the camera preview area."""
@@ -90,12 +118,28 @@ class MainWindow(QMainWindow):
         # Preview label for camera feed
         self.preview_label = QLabel()
         self.preview_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        
+        # Create styled message for camera preview
+        camera_font = QFont("SF Camera", 18)
+        if camera_font.family() != "SF Camera":
+            camera_font = QFont("Arial", 18)  # Fallback
+            
+        self.preview_label.setFont(camera_font)
         self.preview_label.setStyleSheet(
-            "background-color: #2c3e50; color: white; font-size: 18px;"
+            """
+            QLabel {
+                background-color: #2c3e50; 
+                color: white; 
+                font-weight: 500;
+                padding: 20px;
+                border-radius: 8px;
+            }
+            """
         )
-        self.preview_label.setText("Camera Preview\n\nWaiting for camera...")
+        self.preview_label.setText("ASZ Cam OS\n\nInitializing camera...")
         self.preview_label.setMinimumSize(640, 480)
         self.preview_label.setScaledContents(True)
+        self.preview_label.setWordWrap(True)
 
         preview_layout.addWidget(self.preview_label)
 
@@ -181,14 +225,44 @@ class MainWindow(QMainWindow):
 
             # Start preview if camera is available
             if self.camera_service.is_initialized:
-                self.camera_service.start_preview()
-                self.camera_status_label.setText("Camera: Active")
+                # Check if camera is actually available
+                if hasattr(self.camera_service, 'is_camera_available') and self.camera_service.is_camera_available():
+                    self.camera_service.start_preview()
+                    self.camera_status_label.setText("Camera: Active")
+                else:
+                    # Camera service initialized but no camera hardware
+                    camera_status = "Not available"
+                    if hasattr(self.camera_service, 'get_camera_status'):
+                        camera_status = self.camera_service.get_camera_status()
+                    self.camera_status_label.setText(f"Camera: {camera_status}")
+                    self.capture_button.setEnabled(False)
+                    self.preview_label.setText(
+                        "ASZ Cam OS\n\n"
+                        "Camera Not Available\n\n"
+                        "• Camera hardware not detected\n"
+                        "• All other features remain functional\n"
+                        "• Connect camera and restart to enable photo capture"
+                    )
             else:
                 self.camera_status_label.setText("Camera: Initialization failed")
                 self.capture_button.setEnabled(False)
+                self.preview_label.setText(
+                    "ASZ Cam OS\n\n"
+                    "Camera Initialization Failed\n\n"
+                    "• Camera service could not start\n"
+                    "• All other features remain functional\n"
+                    "• Check logs for details"
+                )
         else:
             self.camera_status_label.setText("Camera: Not available (No-camera mode)")
             self.capture_button.setEnabled(False)
+            self.preview_label.setText(
+                "ASZ Cam OS\n\n"
+                "Running in No-Camera Mode\n\n"
+                "• Camera features disabled\n"
+                "• All other features available\n"
+                "• Restart without --no-camera to enable camera"
+            )
             self.capture_button.setText("Camera Required")
             self.preview_label.setText("Camera Preview\n\nRunning in no-camera mode\nCamera service not available")
 
@@ -238,9 +312,19 @@ class MainWindow(QMainWindow):
     @pyqtSlot(str)
     def _on_camera_error(self, error_message):
         """Handle camera error."""
-        self.camera_status_label.setText(f"Camera: Error - {error_message}")
+        self.camera_status_label.setText(f"Camera: Error")
         self.statusBar().showMessage(f"Camera Error: {error_message}", 5000)
         self.logger.error(f"Camera error: {error_message}")
+        
+        # Show detailed error in preview area
+        self.preview_label.setText(
+            "ASZ Cam OS\n\n"
+            "Camera Error\n\n"
+            f"Error: {error_message}\n\n"
+            "• Check camera connection\n"
+            "• All other features remain functional\n"
+            "• Restart to retry camera initialization"
+        )
 
     @pyqtSlot(bool)
     def _on_camera_status_changed(self, is_available):
@@ -251,9 +335,22 @@ class MainWindow(QMainWindow):
             if self.camera_service:
                 self.camera_service.start_preview()
         else:
-            self.camera_status_label.setText("Camera: Not available")
+            # Get detailed status if available
+            camera_status = "Not available"
+            if self.camera_service and hasattr(self.camera_service, 'get_camera_status'):
+                camera_status = self.camera_service.get_camera_status()
+                
+            self.camera_status_label.setText(f"Camera: {camera_status}")
             self.capture_button.setEnabled(False)
-            self.preview_label.setText("Camera Preview\n\nCamera not available")
+            
+            # Show informative message in preview area using SF Camera font
+            self.preview_label.setText(
+                "ASZ Cam OS\n\n"
+                "Camera Not Available\n\n"
+                "• Camera hardware not detected\n"
+                "• All other features remain functional\n"
+                "• Connect camera and restart to enable photo capture"
+            )
 
     def _capture_photo(self):
         """Capture a photo."""

@@ -96,12 +96,17 @@ def main():
         if args.demo or args.mock_camera:
             os.environ['ASZ_MOCK_CAMERA'] = 'true'
         
-        # Configure camera mode for system manager
+        # Configure camera mode for system manager  
         camera_config = {
-            'required': not args.no_camera,
+            'required': False,  # Changed from 'not args.no_camera' to make camera optional by default
             'use_mock': args.demo or args.mock_camera,
             'demo_mode': args.demo
         }
+        
+        # Only require camera if explicitly running in normal mode
+        if not (args.no_camera or args.demo or args.mock_camera):
+            # In normal mode, try to use camera but don't fail if not available
+            camera_config['required'] = False
         
         # Initialize the system
         if not system_manager.initialize(camera_config=camera_config):

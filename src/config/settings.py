@@ -479,7 +479,24 @@ class EnhancedSettings:
         
         try:
             with open(self.config_file, 'r') as f:
-                data = yaml.safe_load(f) or {}
+                # First, try safe loading
+                try:
+                    data = yaml.safe_load(f) or {}
+                except yaml.YAMLError as e:
+                    # If safe loading fails due to tuple tags, try to fix the file
+                    if 'python/tuple' in str(e):
+                        f.seek(0)
+                        content = f.read()
+                        # Replace tuple tags with list format
+                        import re
+                        content = re.sub(r'!!python/tuple\s*\n(\s*-[^\n]*\n\s*-[^\n]*)', r'[\1]', content, flags=re.MULTILINE)
+                        content = re.sub(r'(\s*)-\s*', r'\1', content)  # Clean up list formatting
+                        data = yaml.safe_load(content) or {}
+                        
+                        # Save the corrected version
+                        self.save_config()
+                    else:
+                        raise
             
             # Update all configuration sections
             config_sections = [
@@ -504,6 +521,11 @@ class EnhancedSettings:
         except Exception as e:
             print(f"Error loading config: {e}")
             print("Using default configuration")
+            # Save a clean default configuration
+            try:
+                self.save_config()
+            except:
+                pass
     
     def save_config(self):
         """Save current configuration to file with backup."""
@@ -528,6 +550,9 @@ class EnhancedSettings:
             'system': asdict(self.system)
         }
         
+        # Convert tuples to lists for YAML compatibility
+        config_data = self._convert_tuples_to_lists(config_data)
+        
         try:
             # Ensure directory exists
             Path(self.config_file).parent.mkdir(parents=True, exist_ok=True)
@@ -542,6 +567,35 @@ class EnhancedSettings:
         except Exception as e:
             print(f"Error saving config: {e}")
     
+    def _convert_tuples_to_lists(self, obj):
+        """Convert tuples to lists recursively for YAML compatibility."""
+        if isinstance(obj, tuple):
+            return list(obj)
+        elif isinstance(obj, dict):
+            return {key: self._convert_tuples_to_lists(value) for key, value in obj.items()}
+        elif isinstance(obj, list):
+            return [self._convert_tuples_to_lists(item) for item in obj]
+        else:
+            return obj
+    
+    def _convert_lists_to_tuples(self, obj, target_obj):
+        """Convert lists back to tuples where expected, based on target object."""
+        if isinstance(target_obj, tuple) and isinstance(obj, (list, tuple)):
+            return tuple(obj)
+        elif isinstance(obj, dict) and isinstance(target_obj, dict):
+            result = {}
+            for key, value in obj.items():
+                if hasattr(target_obj, key) if hasattr(target_obj, '__dict__') else key in target_obj:
+                    target_value = getattr(target_obj, key) if hasattr(target_obj, '__dict__') else target_obj[key]
+                    result[key] = self._convert_lists_to_tuples(value, target_value)
+                else:
+                    result[key] = value
+            return result
+        elif isinstance(obj, list):
+            return [self._convert_lists_to_tuples(item, target_obj) for item in obj]
+        else:
+            return obj
+
     def _validate_config(self):
         """Validate configuration values and fix invalid ones."""
         # Camera validation
@@ -571,6 +625,7 @@ class EnhancedSettings:
             if hasattr(obj, key):
                 # Type checking and conversion
                 field_type = type(getattr(obj, key))
+                current_value = getattr(obj, key)
                 try:
                     if field_type == bool:
                         value = bool(value)
@@ -580,6 +635,9 @@ class EnhancedSettings:
                         value = float(value)
                     elif field_type == list:
                         value = list(value) if isinstance(value, (list, tuple)) else [value]
+                    elif field_type == tuple:
+                        # Convert list back to tuple for tuple fields
+                        value = tuple(value) if isinstance(value, (list, tuple)) else (value,)
                     
                     setattr(obj, key, value)
                 except (ValueError, TypeError):
@@ -635,6 +693,9 @@ class EnhancedSettings:
             'performance': asdict(self.performance),
             'system': asdict(self.system)
         }
+        
+        # Convert tuples to lists for YAML compatibility
+        config_data = self._convert_tuples_to_lists(config_data)
         
         with open(export_file, 'w') as f:
             yaml.dump(config_data, f, default_flow_style=False, indent=2)
